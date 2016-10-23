@@ -11,3 +11,4 @@ Example: `git checkout dev1.0`
 ### Development
 
 - dev1.0: Initialization. Configuring and initializing.
+- dev1.0.1: Created index & sign_in & sign_up front pages without adding functions.

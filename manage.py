@@ -9,7 +9,7 @@ app = create_app(os.getenv('BLEXT_CONFIG') or 'default')
 manager = Manager(app)
 
 
-# shell 命令的回掉函数，用于自动导入特定对象（而不用每次执行 shell 命令时去初始化）
+# shell 命令的回调函数，用于自动导入特定对象（而不用每次执行 shell 命令时去初始化）
 def make_shell_context():
     return dict(app=app, db=db)
 

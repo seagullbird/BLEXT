@@ -1,0 +1,63 @@
+/*背景颜色*/
+body {
+	background: #F2F2F2;
+}
+
+/*导航栏背景颜色*/
+.navbar-default {
+	background-color: #60C0DC;
+}
+
+/*导航栏字体颜色*/
+.navbar-default .navbar-nav>li>a {
+	color: #F2F2F2;
+}
+
+/*导航栏标题字体颜色*/
+.navbar-default .navbar-brand {
+	color: #F2F2F2;
+}
+
+/*去圆角去边框*/
+.navbar {
+	border-radius: 0px;
+	border: 0px;
+}
+
+/*去下拉菜单边框*/
+.dropdown-menu {
+	border: 0px;
+}
+
+.area {
+	margin-top: 100px;
+	background: white;
+	padding-bottom: 20px;
+}
+
+.title {
+	text-align: center;
+}
+
+.sign_in_form {
+	margin-right: 50px;
+}
+
+.content {
+	margin-top: 50px;
+}
+
+.btn {
+	width: 100%;
+}
+
+.funcbtn {
+	margin-bottom: 5px;
+	margin-top:5px;
+}
+
+.introduction {
+	border-right: 1px solid grey;
+	margin-top: 20px;
+	padding-left: 50px;
+}
