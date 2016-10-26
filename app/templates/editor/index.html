@@ -1,0 +1,17 @@
+{% extends "user/base.html" %}
+
+{% block page_content %}
+<!-- <form enctype="multipart/form-data" style="margin-top: 50px">
+	<input type="file" />
+	<br>
+	<button class="btn btn-info" type="submit">提交</button>
+</form> -->
+<form action="" method=post enctype=multipart/form-data>
+  <p><input type=file name=file>
+     <input type=submit value=Upload>
+</form>
+<br>	
+<a href="{{ url_for('user.index', username=current_user.username) }}">
+	<button class="btn btn-info">返回</button>
+</a>
+{% endblock %}

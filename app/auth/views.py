@@ -41,7 +41,7 @@ def sign_in():
             login_user(user, signinForm.remember_me.data)
             # 用户访问未授权的URL时会显示登录表单，Flask-Login会把原地址保存在查询字符串的
             # next参数中，这个参数可从request.args字典中读取。如果读取不到则重定向到主页
-            return redirect(request.args.get('next') or url_for('main.index'))
+            return redirect(request.args.get('next') or url_for('user.index', username=user.username))
         # 否则提醒错误的信息
         flash('Invalid username or password.')
     return render_template('auth/sign_in.html', form=signinForm)

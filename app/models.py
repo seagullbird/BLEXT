@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
+from datetime import datetime
 
 
 # （用户）角色模型
@@ -35,6 +36,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, index=True)
     # 外键，这列的值是roles表中行的id值
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    # 用户的文章
+    blogs = db.relationship('Blog', backref='author', lazy='dynamic')
     # 用户密码散列值
     password_hash = db.Column(db.String(128))
     # 是否已确认邮箱
@@ -119,6 +122,23 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+# 博客文章模型
+class Blog(db.Model):
+    # 表名
+    __tablename__ = 'blogs'
+    id = db.Column(db.Integer, primary_key=True)
+    # 文章标题
+    title = db.Column(db.String(128))
+    # 文章简介
+    summary = db.Column(db.Text)
+    # 文章正文
+    body = db.Column(db.Text)
+    # 时间戳
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # 作者
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
 # 加载用户的回调函数，用 user_id 查找用户并返回用户对象

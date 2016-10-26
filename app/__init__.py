@@ -36,6 +36,10 @@ def create_app(config_name):
     app.register_blueprint(main_blueprint)
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    from .user import user as user_blueprint
+    app.register_blueprint(user_blueprint, url_prefix='/user')
+    from .editor import editor as editor_blueprint
+    app.register_blueprint(editor_blueprint, url_prefix='/editor')
 
     # 返回程序实例
     return app
