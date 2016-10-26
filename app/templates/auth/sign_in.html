@@ -4,36 +4,38 @@
 <div class="container area col-md-10 col-md-offset-1">
 	<div class="row clearfix">
 		<div class="col-md-8 column introduction">
-			<h1>Introduction</h1>
-			<h2>Introduction</h1>
-			<h2>Introduction</h1>
-			<h2>Introduction</h1>
+			<h1>Sign In</h1>
+			<h2>Sign In</h1>
+			<h2>Sign In</h1>
+			<h2>Sign In</h1>
 		</div>
-		<div class="col-md-3 col-md-offset-1 column content">
-			<form class="form-horizontal sign_in_form" role="form">
-				<div class="form-group">
+		<div class="col-md-3 column content" style="margin-top: 25px;
+	margin-left: 4%;">
+			{{ wtf.quick_form(form) }}
+			<!-- <form class="form-horizontal sign_in_form" role="form">
+				<div class="form-group required">
 					<div class="col-sm-12">
-						<input type="email" class="form-control" id="inputEmail3" placeholder="Email" />
+						<input placeholder="Email" class="form-control" id="email" name='email' required type="email" value/>
 					</div>
 				</div>
-				<div class="form-group">
+				<div class="form-group required">
 					<div class="col-sm-12">
-						<input type="password" class="form-control" id="inputPassword3" placeholder="Password" />
+						<input required type="password" class="form-control" id="password" name="password" placeholder="Password" value/>
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-sm-12">
 						<div class="checkbox">
-							 <label><input type="checkbox" />Remember me</label>
+							 <label><input id="remember_me" name="remember_me" type="checkbox" value="y"/>Remember me</label>
 						</div>
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-sm-12">
-						 <button type="submit" class="btn btn-info">Sign in</button>
+						 {{ wtf.form_field(form.submit) }}
 					</div>
 				</div>
-			</form>
+			</form> -->
 		</div>
 	</div>
 	</div>

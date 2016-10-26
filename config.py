@@ -12,7 +12,7 @@ class Config:
     # 邮件主题的前缀
     BLEXT_MAIL_SUBJECT_PREFIX = '[Blext]'
     # 发件人的地址
-    BLEXT_MAIL_SENDER = 'Blext admin <seagullbird823@gmail.com>'
+    BLEXT_MAIL_SENDER = 'Blext admin <380554381@qq.com>'
     # 电子邮件收件人
     BLEXT_ADMIN = os.environ.get('BLEXT_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = True

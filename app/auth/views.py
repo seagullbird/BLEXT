@@ -1,12 +1,111 @@
 from . import auth
-from flask import render_template
+from flask import render_template, flash, url_for, redirect, request
+from .forms import SigninForm, SignupForm
+from flask_login import login_user, logout_user, login_required, current_user
+from ..models import User
+from .. import db
+from ..email import send_email
 
 
-@auth.route('/sign_in')
+# 请求钩子：过滤未确认用户
+# 使用 before_app_request 装饰器来使用针对全局请求的钩子
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
+
+# 确认相关信息页面
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main.index'))
+    return render_template('auth/unconfirmed.html')
+
+
+# 登录页面
+@auth.route('/sign_in', methods=['GET', 'POST'])
 def sign_in():
-    return render_template('auth/sign_in.html')
+    # 登录表单模型
+    signinForm = SigninForm()
+    # 如果表单验证通过：
+    if signinForm.validate_on_submit():
+        # 按照表单所提交的信息从数据库中查询
+        user = User.query.filter_by(email=signinForm.email.data).first()
+        # 如果能够查找到该用户并且密码正确：
+        if user is not None and user.verify_password(signinForm.password.data):
+            # 登入用户
+            login_user(user, signinForm.remember_me.data)
+            # 用户访问未授权的URL时会显示登录表单，Flask-Login会把原地址保存在查询字符串的
+            # next参数中，这个参数可从request.args字典中读取。如果读取不到则重定向到主页
+            return redirect(request.args.get('next') or url_for('main.index'))
+        # 否则提醒错误的信息
+        flash('Invalid username or password.')
+    return render_template('auth/sign_in.html', form=signinForm)
 
 
-@auth.route('/sign_up')
+# 注册页面
+@auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
-    return render_template('auth/sign_up.html')
+    # 注册表单模型
+    signupForm = SignupForm()
+    # 如果表单验证通过：
+    if signupForm.validate_on_submit():
+        # 创建新用户对象
+        user = User(email=signupForm.email.data,
+                    username=signupForm.username.data,
+                    password=signupForm.password.data)
+        # 添加到数据库（会自动提交）
+        db.session.add(user)
+        db.session.commit()
+        token = user.generate_confirmation_token()
+        send_email(user.email, 'Confirm Your Account',
+                   'auth/email/confirm', user=user, token=token)
+        flash('A confirmation email has been sent to you by email.')
+        # 将用户作为未确认用户登录
+        login_user(user, False)
+        # 重定向到确认相关信息页面
+        return redirect(url_for('auth.unconfirmed'))
+    return render_template('auth/sign_up.html', form=signupForm)
+
+
+# 确认账户页面
+@auth.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    # 如果当前用户已被确认：
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+    # 检验令牌：
+    if current_user.confirm(token):
+        flash('You have confirmed your account. Thanks!')
+    else:
+        flash('The confirmation link is invalid or has expired.')
+    # 重定向到主页
+    return redirect(url_for('main.index'))
+
+
+# 登出页面
+@auth.route('sign_out')
+@login_required
+def sign_out():
+    # 登出用户
+    logout_user()
+    # 提示用户
+    flash('You have been signed out.')
+    # 重定向到主页
+    return redirect(url_for('main.index'))
+
+
+# 重新发送确认邮件路由，重做一遍注册路由中的工作
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    send_email(current_user.email, 'Confirm Your Account',
+               'auth/email/confirm', user=current_user, token=token)
+    flash('A new confirmation email has been sent to you by email.')
+    return redirect(url_for('main.index'))

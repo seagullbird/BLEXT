@@ -1,0 +1,47 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import Required, Length, Email, EqualTo, Regexp
+from wtforms import ValidationError
+from ..models import User
+
+
+# 用户登录表单类
+class SigninForm(FlaskForm):
+    # 电子邮件字段
+    email = StringField('Email', validators=[
+                        Required(), Length(1, 64), Email()])
+    # 密码字段
+    password = PasswordField('Password', validators=[Required()])
+    # 记住我字段
+    remember_me = BooleanField('Keep me logged in')
+    # 提交按钮
+    submit = SubmitField('Log In', render_kw={"class_": "btn btn-info"})
+
+
+# 用户注册表单类
+class SignupForm(FlaskForm):
+    # 电子邮件字段
+    email = StringField('Email', validators=[Required(), Length(1, 64),
+                                             Email()])
+    # 用户名字段
+    username = StringField('Username', validators=[
+        Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
+                                          'Usernames must have only letters, '
+                                          'numbers, dots or underscores')])
+    # 密码字段
+    password = PasswordField('Password', validators=[
+        Required(), EqualTo('password2', message='Passwords must match.')])
+    # 确认密码字段
+    password2 = PasswordField('Confirm password', validators=[Required()])
+    # 提交按钮
+    submit = SubmitField('Register')
+
+    # 手动添加的 email 验证方法，通过数据库查询判断邮箱是否已经注册
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('Email already registered.')
+
+    # 手动添加的 username 验证方法，通过数据库查询判断用户名是否已经注册
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError('Username already in use.')
