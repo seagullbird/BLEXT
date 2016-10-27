@@ -8,8 +8,8 @@
 			<p>Posted on {{ (blog.timestamp.date()) }}</p>
 			<br>
 		</div>
-		<div class="blog-body">
-			{{ blog.body }}
+		<div class="blog-body" id="blog-body">
+			{{blog.html|safe}}
 		</div>
 	</div>
 </div>

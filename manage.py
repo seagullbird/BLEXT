@@ -2,7 +2,7 @@
 import os
 from app import create_app, db
 from flask_script import Shell, Manager
-from app.models import User, Role
+from app.models import User, Role, Blog
 from flask_migrate import Migrate, MigrateCommand
 
 # 创建程序实例
@@ -15,7 +15,7 @@ migrate = Migrate(app, db)
 
 # shell 命令的回调函数，用于自动导入特定对象（而不用每次执行 shell 命令时去初始化）
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Role=Role)
+    return dict(app=app, db=db, User=User, Role=Role, Blog=Blog)
 
 
 # 添加命令行 shell 命令

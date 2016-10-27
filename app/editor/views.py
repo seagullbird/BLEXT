@@ -1,9 +1,10 @@
 from . import editor
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user
 from .. import db
 from ..models import Blog
 from werkzeug import secure_filename
+import mistune
 
 
 @editor.route('/', methods=['GET', 'POST'])
@@ -24,6 +25,11 @@ def index():
             filename = secure_filename(file.filename)
             # 取得文件内容（以str形式）
             markdown_body = file.stream.read().decode('utf-8')
+
+            # 利用 mistune 将文章转换为 html 形式并存储
+            markdown = mistune.Markdown()
+            html_body = markdown(markdown_body)
+
             # 取得文章摘要
             summary = ''
             # 按行遍历文章内容：
@@ -38,7 +44,7 @@ def index():
                 summary = summary[:50].strip('\n') + '...'
             # 创建新文章并添加进数据库
             new_blog = Blog(title=filename.split('.')[
-                            0], summary=summary, body=markdown_body, author=current_user._get_current_object())
+                            0], summary=summary, body=markdown_body, html=html_body, author=current_user._get_current_object())
             db.session.add(new_blog)
         # 重定向到编辑页
         flash('Your blog is successfully uploaded!')

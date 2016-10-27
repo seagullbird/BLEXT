@@ -44,5 +44,7 @@ body {
 
 .blog-content {
 	background: white;
-	padding: 40px;
+	padding-top: 40px;
+	padding-left: 60px;
+	padding-right: 60px;
 }

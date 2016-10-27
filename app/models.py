@@ -133,8 +133,10 @@ class Blog(db.Model):
     title = db.Column(db.String(128))
     # 文章简介
     summary = db.Column(db.Text)
-    # 文章正文
+    # 文章正文（纯文本）
     body = db.Column(db.Text)
+    # 文章正文（html）
+    html = db.Column(db.Text)
     # 时间戳
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # 作者
