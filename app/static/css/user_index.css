@@ -14,14 +14,13 @@ body {
 
 .Articles {
 	background: white;
-	padding-top: 10px;
+	padding-top: 20px;
 	padding-left: 20px;
-	margin-top: 20px;
-	margin-bottom: 20px;
+	margin-bottom: 30px;
 }
 
 .Article_list {
-	margin-top: 30px;
+	margin-left: 10px;
 }
 
 .Header {
@@ -37,4 +36,13 @@ body {
 
 .Bio {
 	text-align: center;
+}
+
+.blog-header {
+	text-align: center;
+}
+
+.blog-content {
+	background: white;
+	padding: 40px;
 }

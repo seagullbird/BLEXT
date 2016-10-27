@@ -1,0 +1,16 @@
+{% extends "user/base.html" %}
+
+{% block page_content %}
+<div class="container">
+	<div class="col-md-8 col-md-offset-2 blog-content">
+		<div class="blog-header">
+			<h2>{{ blog.title }}</h2>
+			<p>Posted on {{ (blog.timestamp.date()) }}</p>
+			<br>
+		</div>
+		<div class="blog-body">
+			{{ blog.body }}
+		</div>
+	</div>
+</div>
+{% endblock %}

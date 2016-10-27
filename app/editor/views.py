@@ -41,6 +41,7 @@ def index():
                             0], summary=summary, body=markdown_body, author=current_user._get_current_object())
             db.session.add(new_blog)
         # 重定向到编辑页
+        flash('Your blog is successfully uploaded!')
         return redirect(url_for('editor.index'))
 
     return render_template('editor/index.html')

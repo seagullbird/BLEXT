@@ -15,3 +15,4 @@ Example: `git checkout dev1.0`
 - dev1.1: Finished basic user authentication. Added database migration.
 - dev1.1.1: Added three utilities for user profiles. Including changing/resetting password and resetting email.
 - dev2.0: Added user page, able to upload `.md` file and show on user index. **Potential bugs remain!** Gonna sleep :)
+- dev2.1: Added blog page route, able to read pure text blog. Next step **Mistune**!

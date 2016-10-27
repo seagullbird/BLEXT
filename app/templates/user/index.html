@@ -50,21 +50,22 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-8 col-md-offset-1 column Article_list">
+		<div class="col-md-8 column Article_list">
 			{% for blog in blogs %}
 			<div class="Articles">
-				<h2>
-				{{ blog.title }}
-			</h2>
+				<div class="blog-header">
+					<h2>{{ blog.title }}</h2>
+					<p>Posted on {{ (blog.timestamp.date()) }}</p>
+					<br>
+				</div>
 			<blockquote>
-				<p>
-				{{ blog.summary }}
-				</p>
+				<i><p style=" color: grey">{{ blog.summary }}</p></i>
 			</blockquote>
 	
-			<p>
-				 <a class="btn" href="#">Read More »</a>
+			<p style="text-align: center;">
+				<a href="{{ url_for('user.blog_page', username=current_user.username, blog_id=blog.id) }}"><button class="btn btn-default" style="border: 2px solid black">Read More >></button></a>
 			</p>
+			<br>
 			</div>
 			{% endfor %}
 		</div>
