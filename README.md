@@ -18,3 +18,4 @@ Example: `git checkout dev1.0`
 - dev2.1: Added blog page route, able to read pure text blog. Next step **Mistune**!
 - dev3.0: Mistune added, able to read blog pages. :)))
 - dev3.1: Added user blogs pagination.
+- dev3.2: Added BlogParser.

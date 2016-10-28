@@ -3,8 +3,7 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user
 from .. import db
 from ..models import Blog
-from werkzeug import secure_filename
-import mistune
+from .blog_parser import BlogParser
 
 
 @editor.route('/', methods=['GET', 'POST'])
@@ -21,31 +20,22 @@ def index():
         file = request.files['file']
         # 如果文件满足需要的类型：
         if file and allowed_file(file.filename):
-            # 取得文件标题
-            filename = secure_filename(file.filename)
             # 取得文件内容（以str形式）
-            markdown_body = file.stream.read().decode('utf-8')
+            blog = file.stream.read().decode('utf-8')
+            # 初始化BlogParser对象
+            blog_parser = BlogParser(blog)
+            # 获得标题
+            title = blog_parser.get_title()
+            # 获得摘要
+            summary = blog_parser.get_summary()
+            # 获得纯文本正文
+            blog_text = blog_parser.get_blog_text()
+            # 获得富文本正文
+            blog_html = blog_parser.get_blog_html()
 
-            # 利用 mistune 将文章转换为 html 形式并存储
-            markdown = mistune.Markdown()
-            html_body = markdown(markdown_body)
-
-            # 取得文章摘要
-            summary = ''
-            # 按行遍历文章内容：
-            for line in markdown_body.split('\n'):
-                # 如果找到摘要结束标志则退出
-                if line.strip() == '<!-- more -->':
-                    break
-                # 否则将summary加上这一行
-                summary += line + '\n'
-            # 如果全文没有摘要标志则取全文前50个字
-            else:
-                summary = summary[:50] + '...'
-            summary = summary.strip('\n').replace('\n', '<br>')
             # 创建新文章并添加进数据库
-            new_blog = Blog(title=filename.split('.')[
-                            0], summary=summary, body=markdown_body, html=html_body, author=current_user._get_current_object())
+            new_blog = Blog(title=title, summary=summary, body=blog_text,
+                            html=blog_html, author=current_user._get_current_object())
             db.session.add(new_blog)
             flash('Your blog is successfully uploaded!')
         # 重定向到编辑页

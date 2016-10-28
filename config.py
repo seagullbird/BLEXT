@@ -16,7 +16,7 @@ class Config:
     # 电子邮件收件人
     BLEXT_ADMIN = os.environ.get('BLEXT_ADMIN')
     # 用户博客主页每页显示文章数
-    BLEXT_BLOGS_PER_PAGE = 2
+    BLEXT_BLOGS_PER_PAGE = 5
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
