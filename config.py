@@ -15,6 +15,8 @@ class Config:
     BLEXT_MAIL_SENDER = 'Blext admin <380554381@qq.com>'
     # 电子邮件收件人
     BLEXT_ADMIN = os.environ.get('BLEXT_ADMIN')
+    # 用户博客主页每页显示文章数
+    BLEXT_BLOGS_PER_PAGE = 2
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 

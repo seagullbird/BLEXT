@@ -1,5 +1,5 @@
 {% extends "user/base.html" %}
-
+{% import "user/_macros.html" as macros %}
 {% block page_content %}
 <div class="container" style="margin-top: 20px;">
 	<div class="row clearfix">
@@ -59,7 +59,9 @@
 					<br>
 				</div>
 			<blockquote>
-				<i><p style=" color: grey">{{ blog.summary }}</p></i>
+				<i style=" color: grey; font-size:10px">
+					{{ blog.summary|safe }}
+				</i>
 			</blockquote>
 	
 			<p style="text-align: center;">
@@ -68,7 +70,13 @@
 			<br>
 			</div>
 			{% endfor %}
+			{% if pagination %}
+				<div class="pagination" style="float: right">
+			    {{ macros.pagination_widget(pagination, '.index', current_user) }}
+				</div>
+			{% endif %}
 		</div>
 	</div>
 </div>
+
 {% endblock %}

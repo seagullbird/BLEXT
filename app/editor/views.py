@@ -41,13 +41,14 @@ def index():
                 summary += line + '\n'
             # 如果全文没有摘要标志则取全文前50个字
             else:
-                summary = summary[:50].strip('\n') + '...'
+                summary = summary[:50] + '...'
+            summary = summary.strip('\n').replace('\n', '<br>')
             # 创建新文章并添加进数据库
             new_blog = Blog(title=filename.split('.')[
                             0], summary=summary, body=markdown_body, html=html_body, author=current_user._get_current_object())
             db.session.add(new_blog)
+            flash('Your blog is successfully uploaded!')
         # 重定向到编辑页
-        flash('Your blog is successfully uploaded!')
         return redirect(url_for('editor.index'))
 
     return render_template('editor/index.html')
