@@ -8,10 +8,11 @@
 				<div class="col-md-12 column Pannel1">
 					<div class="page-header Header">
 						<h1>
-							{{current_user.username}}'s BLOG
+							{{host_user.username}}'s BLOG
 						</h1>
 					</div>
 					<div class="panel panel-default Options">
+						{% if host_user == current_user %}
 						<a href="{{ url_for('editor.index') }}">
 							<div class="panel-heading">
 							<h3 class="panel-title">
@@ -29,6 +30,7 @@
 							Personality
 						</div>
 						</a>
+						{% endif %}
 						<a href="{{ url_for('main.index') }}">
 							<div class="panel-footer">
 							Back to BLEXT
@@ -65,14 +67,14 @@
 			</blockquote>
 	
 			<p style="text-align: center;">
-				<a href="{{ url_for('user.blog_page', username=current_user.username, blog_id=blog.id) }}"><button class="btn btn-default" style="border: 2px solid black">Read More >></button></a>
+				<a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}"><button class="btn btn-default" style="border: 2px solid black">Read More >></button></a>
 			</p>
 			<br>
 			</div>
 			{% endfor %}
 			{% if pagination %}
 				<div class="pagination" style="float: right">
-			    {{ macros.pagination_widget(pagination, '.index', current_user) }}
+			    {{ macros.pagination_widget(pagination, '.index', host_user) }}
 				</div>
 			{% endif %}
 		</div>

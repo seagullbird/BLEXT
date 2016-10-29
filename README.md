@@ -20,3 +20,4 @@ Example: `git checkout dev1.0`
 - dev3.1: Added user blogs pagination.
 - dev3.2: Added BlogParser.
 - dev3.2.1: BlogParser bug fixed.
+- dev3.2.2: Added visiting control.
