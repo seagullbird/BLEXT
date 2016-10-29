@@ -42,6 +42,14 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     # 是否已确认邮箱
     confirmed = db.Column(db.Boolean, default=False)
+    # 用户个性签名
+    bio = db.Column(db.String(64))
+    # 用户about_me
+    about_me = db.Column(db.Text)
+    # 用户头像图片地址
+    avatar_url = db.Column(db.String(256))
+    # 用户博客标题
+    blog_title = db.Column(db.String(32))
 
     # 将 password 属性设置为只写属性，即不能直接通过 .password 访问密码值
     @property

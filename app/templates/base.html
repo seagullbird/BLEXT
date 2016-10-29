@@ -34,15 +34,17 @@
                              <a href="{{ url_for('auth.sign_up')}}">Sign up</a>
                         </li>
                         {% else %}
-                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="{{ url_for('user.index',username=current_user.username) }}">{{current_user.username}}'s BLOG</a></li>
-                                <li role="presentation" class="divider"></li>
-                                <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
-                                <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
-                                <li><a href="{{ url_for('auth.sign_out') }}">Sign Out</a></li>
-                            </ul>
+                        <li>
+                             <a href="{{ url_for('user.index',username=current_user.username) }}">
+                                {% if current_user.blog_title %}
+                                {{current_user.blog_title}}
+                                {% else %}
+                                {{current_user.username}}'s BLOG
+                                {% endif %}
+                             </a>
+                        </li>
+                        <li>
+                             <a href="{{ url_for('auth.sign_out') }}">Sign Out</a>
                         </li>
                         {% endif %}
                     </ul>

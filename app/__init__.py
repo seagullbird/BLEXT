@@ -40,6 +40,8 @@ def create_app(config_name):
     app.register_blueprint(user_blueprint, url_prefix='/user')
     from .editor import editor as editor_blueprint
     app.register_blueprint(editor_blueprint, url_prefix='/editor')
+    from .settings import settings as settings_blueprint
+    app.register_blueprint(settings_blueprint, url_prefix='/settings')
 
     # 返回程序实例
     return app

@@ -12,5 +12,20 @@
 			{{blog.html|safe}}
 		</div>
 	</div>
+	{% if current_user.is_authenticated and current_user.username == username %}
+	<div class="col-md-1 col-md-offset-1 control-pannel">
+		 <div class="control-btn">
+		 <a href="#">
+		 	<button type="button" class="btn btn-info">Edit</button>
+		 </a>
+		 </div>
+		 
+		 <div class="control-btn">
+		 	<a href="{{ url_for('user.delete_blog', blog_id=blog.id) }}">
+		 		<button type="button" class="btn btn-danger">Delete</button>
+		 	</a>
+		 </div>
+	</div>
+	{% endif %}
 </div>
 {% endblock %}

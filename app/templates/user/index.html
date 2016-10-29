@@ -8,7 +8,11 @@
 				<div class="col-md-12 column Pannel1">
 					<div class="page-header Header">
 						<h1>
+							{% if host_user.blog_title %}
+							{{host_user.blog_title}}
+							{% else %}
 							{{host_user.username}}'s BLOG
+							{% endif %}
 						</h1>
 					</div>
 					<div class="panel panel-default Options">
@@ -20,17 +24,17 @@
 							</h3>
 						</div>
 						</a>
-						<a href="#">
+						<a href="{{ url_for('settings.profile_setting') }}">
 							<div class="panel-body">
-							My Profile
-						</div>
-						</a>
-						<a href="#">
-							<div class="panel-body">
-							Personality
+							Settings
 						</div>
 						</a>
 						{% endif %}
+						<a href="{{ url_for('user.about_me', username=host_user.username) }}">
+							<div class="panel-body">
+							About
+						</div>
+						</a>
 						<a href="{{ url_for('main.index') }}">
 							<div class="panel-footer">
 							Back to BLEXT
@@ -43,11 +47,21 @@
 				<div class="col-md-12 column Pannel2">
 					<div class="col-md-12">
 						<div class="Avatar col-md-8 col-md-offset-2">
+							{% if host_user.avatar_url %}
+							<img width="100%" height="100%" src="{{host_user.avatar_url}}" />
+							{% else %}
 							<img width="100%" height="100%" src="../static/img/default_header.jpg" />
+							{% endif %}
 						</div>
 					</div>
 					<div class="Bio">
-						<p>Add a Bio</p>
+						{% if host_user.bio %}
+						<p>{{ host_user.bio }}</p>
+						{% else %}
+						<a href="{{ url_for('settings.profile_setting') }}">
+							Add a Bio
+						</a>
+						{% endif %}
 					</div>
 				</div>
 			</div>
@@ -72,7 +86,7 @@
 			<br>
 			</div>
 			{% endfor %}
-			{% if pagination %}
+			{% if blogs and pagination %}
 				<div class="pagination" style="float: right">
 			    {{ macros.pagination_widget(pagination, '.index', host_user) }}
 				</div>
@@ -80,5 +94,4 @@
 		</div>
 	</div>
 </div>
-
 {% endblock %}

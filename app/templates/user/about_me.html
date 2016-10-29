@@ -1,0 +1,15 @@
+{% extends "user/base.html" %}
+
+{% block page_content %}
+<div class="container">
+	<div class="col-md-8 col-md-offset-2 blog-content">
+		<div class="blog-header">
+			<h1>About Me</h1>
+			<br>
+		</div>
+		<div class="blog-body" id="blog-body">
+			{{about_me|safe}}
+		</div>
+	</div>
+</div>
+{% endblock %}
