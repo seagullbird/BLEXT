@@ -50,7 +50,7 @@ class BlogParser():
                     # 将header每一行的内容转换为header字典的键值对
                     items.append(line.split(': '))
                 except:
-                    raise TypeError('wrong header line')
+                    pass
             self.header = dict(items)
 
     # 获得文章标题

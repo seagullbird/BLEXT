@@ -19,3 +19,4 @@ Example: `git checkout dev1.0`
 - dev3.0: Mistune added, able to read blog pages. :)))
 - dev3.1: Added user blogs pagination.
 - dev3.2: Added BlogParser.
+- dev3.2.1: BlogParser bug fixed.
