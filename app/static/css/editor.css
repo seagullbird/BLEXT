@@ -3,10 +3,12 @@ body {
 }
 
 .textArea {
-	height: 100%;
+	height: 1000px;
+	resize:none;
 }
 
 .preview {
-	height: 100%;
+	height: 1000px;
 	background: white;
+	overflow: scroll;
 }
