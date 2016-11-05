@@ -22,3 +22,4 @@ Example: `git checkout dev1.0`
 - dev3.2.1: BlogParser bug fixed.
 - dev3.2.2: Added visiting control.
 - dev4.0: Added user settings, supported about_me, bio, avatar and blog title. Also moved changing password function to settings.
+- dev5.0: Added online markdown edit. Issues: pictures storage, page arrangement.

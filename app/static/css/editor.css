@@ -1,3 +1,12 @@
 body {
 	background: #F2F2F2;
 }
+
+.textArea {
+	height: 100%;
+}
+
+.preview {
+	height: 100%;
+	background: white;
+}

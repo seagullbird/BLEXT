@@ -1,11 +1,12 @@
 {% extends "user/base.html" %}
 
 {% block page_content %}
-<!-- <form enctype="multipart/form-data" style="margin-top: 50px">
-	<input type="file" />
-	<br>
-	<button class="btn btn-info" type="submit">提交</button>
-</form> -->
+<section class="row">
+    <textarea class="col-md-6 full-height textArea" id="plainText" placeholder="Write your Markdown here.." autofocus></textarea>
+    <div class="col-md-6 full-height preview" id="markdown"></div>
+    </section>
+<br>	
+
 <form class="form-horizontal" action="" method=post enctype=multipart/form-data>
 <div class="formgroup">
 	<p><input class="form-control" type=file name=file></p>
@@ -16,8 +17,13 @@
 	
 	
 </form>
-<br>	
+
 <a href="{{ url_for('user.index', username=current_user.username) }}">
 	<button class="btn btn-info">返回</button>
 </a>
+
+
+<script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 {% endblock %}
+
