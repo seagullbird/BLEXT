@@ -24,3 +24,4 @@ Example: `git checkout dev1.0`
 - dev4.0: Added user settings, supported about_me, bio, avatar and blog title. Also moved changing password function to settings.
 - dev5.0: Added online markdown edit. Issues: pictures storage, page arrangement.
 - dev5.1: Page arrangement unsaticefactorily but practically solved.
+- dev5.1.1: Added navbar to editor page.
