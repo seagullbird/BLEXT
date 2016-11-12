@@ -9,19 +9,10 @@ from .blog_parser import BlogParser
 @editor.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # 允许的文件格式
-        ALLOWED_EXTENSIONS = ['md']
-
-        # 判断文件类型方法
-        def allowed_file(filename):
-            return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-        # 从 request 中读取文件
-        file = request.files['file']
-        # 如果文件满足需要的类型：
-        if file and allowed_file(file.filename):
-            # 取得文件内容（以str形式）
-            blog = file.stream.read().decode('utf-8')
+        # 取得文件内容（以str形式）
+        blog = request.form.get('plainText', '')
+        # 如果文件不为空：
+        if blog:
             # 初始化BlogParser对象
             blog_parser = BlogParser(blog)
             # 获得标题
@@ -40,5 +31,10 @@ def index():
             flash('Your blog is successfully uploaded!')
         # 重定向到编辑页
         return redirect(url_for('editor.index'))
-
     return render_template('editor/index.html')
+
+
+@editor.route('/publish')
+def publish():
+
+    return redirect(url_for('main.index'))

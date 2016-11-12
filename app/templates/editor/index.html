@@ -1,29 +1,21 @@
-{% extends "editor/base.html" %}
+{% extends "editor/base.html" %} 
 
 {% block page_content %}
 <section class="row">
-    <textarea class="col-md-6 full-height textArea" id="plainText" placeholder="Write your Markdown here.." autofocus></textarea>
+    <form action id="text_form" method="post" class="form form-horizontal sign_in_form" role="form" name="text_form">
+        <textarea name="plainText" class="col-md-6 full-height textArea" id="plainText" placeholder="Write your Markdown here..." autofocus></textarea>
+    </form>
     <div class="col-md-6 full-height preview" id="markdown"></div>
-    </section>
-<br>	
+</section>
+{% endblock %} 
 
-<!-- <form class="form-horizontal" action="" method=post enctype=multipart/form-data>
-<div class="formgroup">
-	<p><input class="form-control" type=file name=file></p>
-</div>
-<div class="formgroup">
-	<p><input class="btn btn-danger form-control" type=submit value=Upload></p>
-</div> -->
-	
-	
-</form>
-
-<a href="{{ url_for('user.index', username=current_user.username) }}">
-	<button class="btn btn-info">返回</button>
-</a>
-
-
+{% block scripts %} 
+{{ super() }}
 <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script type="text/javascript">
+	$('#publish').click(function() {
+	    $('#text_form').submit();
+	});
+</script>
 {% endblock %}
-

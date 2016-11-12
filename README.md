@@ -25,3 +25,4 @@ Example: `git checkout dev1.0`
 - dev5.0: Added online markdown edit. Issues: pictures storage, page arrangement.
 - dev5.1: Page arrangement unsaticefactorily but practically solved.
 - dev5.1.1: Added navbar to editor page.
+- dev5.2: Editor can now publish new blogs.

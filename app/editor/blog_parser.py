@@ -20,7 +20,8 @@ import mistune
 
 class BlogParser():
     def __init__(self, blog):
-        self.lines = blog.split('\n')
+        self.lines = blog.split('\r\n')
+        print(self.lines)
         self.header = {}
         self.summary = ''
         self.blog_text = ''
