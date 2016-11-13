@@ -1,21 +1,21 @@
 {% extends "editor/base.html" %} 
 
 {% block page_content %}
-<section class="row">
-    <form action id="text_form" method="post" class="form form-horizontal sign_in_form" role="form" name="text_form">
-        <textarea name="plainText" class="col-md-6 full-height textArea" id="plainText" placeholder="Write your Markdown here..." autofocus></textarea>
-    </form>
-    <div class="col-md-6 full-height preview" id="markdown"></div>
-</section>
+<form action id="text_form" method="post" class="form form-horizontal sign_in_form" role="form" name="text_form">
+    <textarea name="plainText" id="plainText" placeholder="Write your Markdown here..."></textarea>
+</form>
+
 {% endblock %} 
 
 {% block scripts %} 
 {{ super() }}
-<script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script type="text/javascript">
 	$('#publish').click(function() {
 	    $('#text_form').submit();
 	});
+
+	window.onload = function() {
+		$("#plainText").markdown({autofocus:true});
+	}
 </script>
 {% endblock %}

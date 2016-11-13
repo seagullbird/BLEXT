@@ -26,3 +26,4 @@ Example: `git checkout dev1.0`
 - dev5.1: Page arrangement unsaticefactorily but practically solved.
 - dev5.1.1: Added navbar to editor page.
 - dev5.2: Editor can now publish new blogs.
+- dev6.0: Brand new markdown editor supported by [Bootstrap-Markdown](http://www.codingdrama.com/bootstrap-markdown/), still cannot full-height the `textarea`. :(

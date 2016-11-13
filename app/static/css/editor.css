@@ -5,15 +5,16 @@ body {
 
 .textArea {
 	height: 1000px;
-	width: 49%;
-	margin-right: 1%;
+	width: 100%;
 	resize:none;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
-.preview {
+/*.preview {
 	height: 1000px;
 	width: 49%;
 	margin-left: 1%;
 	background: white;
 	overflow: scroll;
-}
+}*/
