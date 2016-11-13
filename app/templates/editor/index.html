@@ -14,8 +14,17 @@
 	    $('#text_form').submit();
 	});
 
+	function reset_size() {
+		$('form>div').height($('body').height());
+		$('textarea').height($('form>div').height() - $('.md-header').outerHeight());
+	};
+
 	window.onload = function() {
-		$("#plainText").markdown({autofocus:true});
+		$("#plainText").markdown({autofocus:true, iconlibrary:'fa'});
+		reset_size();
 	}
+
+	window.onresize = reset_size;
+	$('span.fa.fa-expand').onclick = function() {alert('asdf')};
 </script>
 {% endblock %}

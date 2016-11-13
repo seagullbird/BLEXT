@@ -4,10 +4,6 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 
 ## Versions
 
-Use `git checkout <version>` to checkout any version.
-
-Example: `git checkout dev1.0`
-
 ### Development
 
 - dev1.0: Initialization. Configuring and initializing.
@@ -27,3 +23,4 @@ Example: `git checkout dev1.0`
 - dev5.1.1: Added navbar to editor page.
 - dev5.2: Editor can now publish new blogs.
 - dev6.0: Brand new markdown editor supported by [Bootstrap-Markdown](http://www.codingdrama.com/bootstrap-markdown/), still cannot full-height the `textarea`. :(
+- dev6.1: Arrangement rebuilt. editor area able to auto resize now. BUG: cannot do auto resize after clicking expand/unexpand button.

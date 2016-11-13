@@ -1,20 +1,11 @@
+html {
+	height: 100%;
+}
+
 body {
 	background: #F2F2F2;
 	padding-top: 70px;
-}
-
-.textArea {
-	height: 1000px;
+	padding-bottom: 20px;
+	height: 100%;
 	width: 100%;
-	resize:none;
-	padding-left: 10px;
-	padding-right: 10px;
 }
-
-/*.preview {
-	height: 1000px;
-	width: 49%;
-	margin-left: 1%;
-	background: white;
-	overflow: scroll;
-}*/
