@@ -149,6 +149,8 @@ class Blog(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # 作者
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # 是否草稿
+    draft = db.Column(db.Boolean, default=False)
 
 
 # 加载用户的回调函数，用 user_id 查找用户并返回用户对象

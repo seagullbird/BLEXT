@@ -27,8 +27,21 @@
 						<a href="{{ url_for('settings.profile_setting') }}">
 							<div class="panel-body">
 							Settings
-						</div>
+							</div>
 						</a>
+							{% if draft_enter == 'Drafts' %}
+							<a href="{{ url_for('user.drafts', username=host_user.username) }}">
+								<div class="panel-body">
+									{{ draft_enter }}
+								</div>
+							</a>
+							{% else %}
+							<a href="{{ url_for('user.index', username=host_user.username) }}">
+								<div class="panel-body">
+									{{ draft_enter }}
+								</div>
+							</a>
+							{% endif %}
 						{% endif %}
 						<a href="{{ url_for('user.about_me', username=host_user.username) }}">
 							<div class="panel-body">

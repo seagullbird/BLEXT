@@ -13,11 +13,33 @@ def index(username):
     # 添加分页
     page = request.args.get('page', 1, type=int)
     # 每页显示的博客数保存在配置里
-    pagination = Blog.query.filter_by(author_id=host_user.id).order_by(Blog.timestamp.desc()).paginate(
+    pagination = Blog.query.filter_by(author_id=host_user.id, draft=False).order_by(Blog.timestamp.desc()).paginate(
         page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
     # 获得用户所有文章（按时间戳顺序）
     blogs = pagination.items
-    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
+    # 草稿入口
+    draft_enter = 'Drafts'
+    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user, draft_enter=draft_enter)
+
+
+# 用户草稿路由
+@login_required
+@user.route('/<username>/drafts')
+def drafts(username):
+    host_user = User.query.filter_by(username=username).first()
+    # 判断是否本人
+    if host_user and current_user.id == host_user.id:
+        # 添加分页
+        page = request.args.get('page', 1, type=int)
+        # 每页显示的博客数保存在配置里
+        pagination = Blog.query.filter_by(author_id=host_user.id, draft=True).order_by(Blog.timestamp.desc()).paginate(
+            page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
+        # 获得用户所有文章（按时间戳顺序）
+        blogs = pagination.items
+        # 返回入口
+        draft_enter = 'Home'
+        return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user, draft_enter=draft_enter)
+    return redirect(url_for('main.page_not_found'))
 
 
 # 用户文章路由
@@ -30,7 +52,10 @@ def blog_page(username, blog_id):
         blog = host_user.blogs.filter_by(id=blog_id).first()
     else:
         blog = current_user.blogs.filter_by(id=blog_id).first()
-    return render_template('user/blog_page.html', blog=blog)
+    if blog:
+        return render_template('user/blog_page.html', blog=blog)
+    else:
+        return redirect(url_for('main.page_not_found'))
 
 
 # 删除用户文章（需要登录才能访问）

@@ -23,18 +23,17 @@ def index():
             blog_text = blog_parser.get_blog_text()
             # 获得富文本正文
             blog_html = blog_parser.get_blog_html()
+            # 草稿
+            draft = request.form.get('draft')
 
             # 创建新文章并添加进数据库
             new_blog = Blog(title=title, summary=summary, body=blog_text,
-                            html=blog_html, author=current_user._get_current_object())
+                            html=blog_html, author=current_user._get_current_object(), draft=draft)
             db.session.add(new_blog)
-            flash('Your blog is successfully uploaded!')
+            if not draft:
+                flash('Your blog is successfully uploaded!')
+            else:
+                flash('Your blog is successfully saved as a draft.')
         # 重定向到编辑页
         return redirect(url_for('editor.index'))
     return render_template('editor/index.html')
-
-
-@editor.route('/publish')
-def publish():
-
-    return redirect(url_for('main.index'))

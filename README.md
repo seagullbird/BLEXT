@@ -24,3 +24,4 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev5.2: Editor can now publish new blogs.
 - dev6.0: Brand new markdown editor supported by [Bootstrap-Markdown](http://www.codingdrama.com/bootstrap-markdown/), still cannot full-height the `textarea`. :(
 - dev6.1: Arrangement rebuilt. editor area able to auto resize now. BUG: cannot do auto resize after clicking expand/unexpand button.
+- dev6.2: Implemented drafts feature. BUGs remain. (Errors occur when visiting illicit routes.)

@@ -3,6 +3,7 @@
 {% block page_content %}
 <form action id="text_form" method="post" class="form form-horizontal sign_in_form" role="form" name="text_form">
     <textarea name="plainText" id="plainText" placeholder="Write your Markdown here..."></textarea>
+    <input type="hidden" id="draft" name="draft"/>
 </form>
 
 {% endblock %} 
@@ -11,8 +12,14 @@
 {{ super() }}
 <script type="text/javascript">
 	$('#publish').click(function() {
+		$('#draft').val(false);
 	    $('#text_form').submit();
 	});
+
+	$('#sava_draft').click(function() {
+		$('#draft').val(true);
+		$('#text_form').submit();
+	})
 
 	function reset_size() {
 		$('form>div').height($('body').height());
