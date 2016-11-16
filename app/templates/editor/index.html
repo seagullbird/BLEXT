@@ -1,37 +1,18 @@
 {% extends "editor/base.html" %} 
 
 {% block page_content %}
-<form action id="text_form" method="post" class="form form-horizontal sign_in_form" role="form" name="text_form">
-    <textarea name="plainText" id="plainText" placeholder="Write your Markdown here..."></textarea>
+<form action id="text_form" method="post" class="form form-horizontal" role="form" name="text_form">		
+	
+	<input type="text" class="form-control" name="title" id="title" placeholder="Blog Title" style="width: 30%">
+	<br>
+	<input type="text" class="form-control" name="category" id="category" placeholder="Category" style="width: 30%">
+	<br>
+	<input type="text" class="form-control" name="tags" id="tags" placeholder="Tags (Separate with ',')" style="width: 30%">
+	<br>
+	<textarea name="summary" id="summary" class="form-control" cols="30" rows="10" style="width: 30%"></textarea>
+	<br>
+
+	<textarea name="plainText" id="plainText" placeholder="Write your Markdown content here"></textarea>
     <input type="hidden" id="draft" name="draft"/>
 </form>
-
-{% endblock %} 
-
-{% block scripts %} 
-{{ super() }}
-<script type="text/javascript">
-	$('#publish').click(function() {
-		$('#draft').val(false);
-	    $('#text_form').submit();
-	});
-
-	$('#sava_draft').click(function() {
-		$('#draft').val(true);
-		$('#text_form').submit();
-	})
-
-	function reset_size() {
-		$('form>div').height($('body').height());
-		$('textarea').height($('form>div').height() - $('.md-header').outerHeight());
-	};
-
-	window.onload = function() {
-		$("#plainText").markdown({autofocus:true, iconlibrary:'fa'});
-		reset_size();
-	}
-
-	window.onresize = reset_size;
-	$('span.fa.fa-expand').onclick = function() {alert('asdf')};
-</script>
 {% endblock %}

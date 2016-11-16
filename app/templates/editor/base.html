@@ -58,5 +58,6 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='bootstrap-markdown/js/bootstrap-markdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
 <script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
 {% endblock %}

@@ -141,6 +141,10 @@ class Blog(db.Model):
     title = db.Column(db.String(128))
     # 文章简介
     summary = db.Column(db.Text)
+    # 文章分类
+    category = db.Column(db.String(20))
+    # 文章标签
+    tags = db.relationship('Tag', backref='blog', lazy='dynamic')
     # 文章正文（纯文本）
     body = db.Column(db.Text)
     # 文章正文（html）
@@ -151,6 +155,17 @@ class Blog(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
+
+
+# 文章标签模型
+class Tag(db.Model):
+    # 表名
+    __tablename__ = 'tags'
+    id = db.Column(db.Integer, primary_key=True)
+    # 标签名
+    name = db.Column(db.String(20))
+    # 对应的文章
+    blog_id = db.Column(db.Integer, db.ForeignKey('blogs.id'))
 
 
 # 加载用户的回调函数，用 user_id 查找用户并返回用户对象
