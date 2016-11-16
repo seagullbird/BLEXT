@@ -26,3 +26,4 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev6.1: Arrangement rebuilt. editor area able to auto resize now. BUG: cannot do auto resize after clicking expand/unexpand button.
 - dev6.2: Implemented drafts feature. BUGs remain. (Errors occur when visiting illicit routes.)
 - dev7.0: Added `category` and `tags` support. Abandoned `blog_parser.py` (Not deleted yet).
+- dev7.0.1: Unfinished `cats` & `tags` pages and routes.

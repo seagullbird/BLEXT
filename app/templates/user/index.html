@@ -16,32 +16,22 @@
 						</h1>
 					</div>
 					<div class="panel panel-default Options">
+						<a href="{{ url_for('user.index', username=host_user.username) }}">
+							<div class="panel-body">
+							Home
+							</div>
+						</a>
 						{% if host_user == current_user %}
 						<a href="{{ url_for('editor.index') }}">
 							<div class="panel-heading">
-							<h3 class="panel-title">
 								Add a new Blog
-							</h3>
-						</div>
+							</div>
 						</a>
 						<a href="{{ url_for('settings.profile_setting') }}">
 							<div class="panel-body">
 							Settings
 							</div>
 						</a>
-							{% if draft_enter == 'Drafts' %}
-							<a href="{{ url_for('user.drafts', username=host_user.username) }}">
-								<div class="panel-body">
-									{{ draft_enter }}
-								</div>
-							</a>
-							{% else %}
-							<a href="{{ url_for('user.index', username=host_user.username) }}">
-								<div class="panel-body">
-									{{ draft_enter }}
-								</div>
-							</a>
-							{% endif %}
 						{% endif %}
 						<a href="{{ url_for('user.about_me', username=host_user.username) }}">
 							<div class="panel-body">
@@ -76,6 +66,18 @@
 						</a>
 						{% endif %}
 					</div>
+					<hr>
+					<div class="row">
+						<a href="{{ url_for('user.categories') }}">
+							<div class="col-md-4 sub-pannel"><b>Cats</b></div>
+						</a>
+						<a href="{{ url_for('user.tags') }}">
+							<div class="col-md-4 sub-pannel"><b>Tags</b></div>
+						</a>
+						<a href="{{ url_for('user.drafts', username=host_user.username) }}">
+							<div class="col-md-4 sub-pannel"><b>Drafts</b></div>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -84,7 +86,9 @@
 			<div class="Articles">
 				<div class="blog-header">
 					<h2>{{ blog.title }}</h2>
-					<p>Posted on {{ (blog.timestamp.date()) }}</p>
+					<p>
+						Posted on {{ (blog.timestamp.date()) }} | In <a href="#">{{ blog.category }}</a>
+					</p>
 					<br>
 				</div>
 			<blockquote>

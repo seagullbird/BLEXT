@@ -17,9 +17,21 @@ def index(username):
         page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
     # 获得用户所有文章（按时间戳顺序）
     blogs = pagination.items
-    # 草稿入口
-    draft_enter = 'Drafts'
-    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user, draft_enter=draft_enter)
+    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
+
+
+# 文章分类路由
+@login_required
+@user.route('/categories')
+def categories(username):
+    pass
+
+
+# 文章标签路由
+@login_required
+@user.route('/tags')
+def tags(username):
+    pass
 
 
 # 用户草稿路由
