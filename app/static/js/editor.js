@@ -1,5 +1,7 @@
 	// title validation
 	function validate_title() {
+		// for testing
+		return true;
 		var 
 			re_title = /^[0-9a-zA-Z\_][0-9a-zA-Z\_\s]{0,49}$/,
 			title = $('#title');
@@ -10,6 +12,8 @@
 
 	// Category validation
 	function validate_cat() {
+		// for testing
+		return true;
 		var
 			re_cat = /^[0-9a-zA-Z\.\_]{1,20}$/,
 			cat = $('#category');
@@ -20,6 +24,8 @@
 
 	// tag validation
 	function valiadate_tag() {
+		// for testing
+		return true;
 		var
 			re_tag = /^[0-9a-zA-Z\_\,]{0,256}$/,
 			tags = $('#tags');
@@ -30,6 +36,8 @@
 
 	// text validation
 	function validate_text() {
+		// for testing
+		return true;
 		if ($('#plainText').val() != '') return true;
 		alert('Nothing is wrtten!')
 		return false;		
@@ -49,13 +57,6 @@
 		} 
 	});
 
-	// function reset_size() {
-	// 	$('form>div').height($('body').height());
-	// 	$('textarea').height($('form>div').height() - $('.md-header').outerHeight());
-	// };
-	// window.onresize = reset_size;
-
 	window.onload = function() {
 		$("#plainText").markdown({autofocus:true, iconlibrary:'fa'});
-		// reset_size();
 	}

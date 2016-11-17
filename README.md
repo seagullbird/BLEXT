@@ -27,3 +27,4 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev6.2: Implemented drafts feature. BUGs remain. (Errors occur when visiting illicit routes.)
 - dev7.0: Added `category` and `tags` support. Abandoned `blog_parser.py` (Not deleted yet).
 - dev7.0.1: Unfinished `cats` & `tags` pages and routes.
+- dev8.0: Completed `cats` & `tags`, inplemented editing function in blog page, `edit` button. —— Completed almost everything I intended to inplement. Except: Funtion for the `Help` button in editor page; Both front and backend input validation; POTENTIAL BUGS and NASTY FRONT PAGES.

@@ -6,24 +6,6 @@ from flask import current_app
 from datetime import datetime
 
 
-# （用户）角色模型
-class Role(db.Model):
-    # 表名
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True)
-    # 角色名
-    name = db.Column(db.String(64), unique=True)
-
-    # 对于一个Role类的实例，其 users 属性将返回与角色相关联的用户组成的列表
-    # backref参数向User模型中添加一个role属性，从而定义反向关系。这一属性可替代role_id访问
-    # Role模型，此时获取的是模型对象，而不是外键的值
-    # dynamic: 不加载记录，但提供加载记录的查询
-    users = db.relationship('User', backref='role', lazy='dynamic')
-
-    def __repr__(self):
-        return '<Role %r>' % self.name
-
-
 # 用户模型
 # 继承 UserMixin ，包含要使用 Flask-login 的一些默认方法
 class User(db.Model, UserMixin):
@@ -34,8 +16,6 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, index=True)
     # 用户邮箱
     email = db.Column(db.String(64), unique=True, index=True)
-    # 外键，这列的值是roles表中行的id值
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     # 用户的文章
     blogs = db.relationship('Blog', backref='author', lazy='dynamic')
     # 用户密码散列值
@@ -48,8 +28,12 @@ class User(db.Model, UserMixin):
     about_me = db.Column(db.Text)
     # 用户头像图片地址
     avatar_url = db.Column(db.String(256))
-    # 用户博客标题
+    # 用户博客主页标题
     blog_title = db.Column(db.String(32))
+    # 用户文章的所有分类
+    categories = db.relationship('Category', backref='author', lazy='dynamic')
+    # 用户文章的所有标签
+    tags = db.relationship('Tag', backref='author', lazy='dynamic')
 
     # 将 password 属性设置为只写属性，即不能直接通过 .password 访问密码值
     @property
@@ -132,6 +116,13 @@ class User(db.Model, UserMixin):
         return '<User %r>' % self.username
 
 
+# 文章与标签关系表
+blog_tag = db.Table('blog_tag',
+                    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
+                    db.Column('page_id', db.Integer, db.ForeignKey('blogs.id'))
+                    )
+
+
 # 博客文章模型
 class Blog(db.Model):
     # 表名
@@ -139,12 +130,15 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # 文章标题
     title = db.Column(db.String(128))
+    # 文章简介纯文本
+    summary_text = db.Column(db.Text)
     # 文章简介
     summary = db.Column(db.Text)
     # 文章分类
-    category = db.Column(db.String(20))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     # 文章标签
-    tags = db.relationship('Tag', backref='blog', lazy='dynamic')
+    tags = db.relationship('Tag', secondary=blog_tag,
+                           backref=db.backref('blogs', lazy='dynamic'))
     # 文章正文（纯文本）
     body = db.Column(db.Text)
     # 文章正文（html）
@@ -156,6 +150,25 @@ class Blog(db.Model):
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
 
+    def __repr__(self):
+        return '<Blog %r>' % self.title
+
+
+# 文章分类模型（一篇文章对应一个分类，一个分类对应多篇文章）
+class Category(db.Model):
+    # 表名
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    # 分类名
+    name = db.Column(db.String(20))
+    # 对应的文章
+    blogs = db.relationship('Blog', backref='category', lazy='dynamic')
+    # 对应的用户
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<Category %r>' % self.name
+
 
 # 文章标签模型
 class Tag(db.Model):
@@ -164,8 +177,11 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # 标签名
     name = db.Column(db.String(20))
-    # 对应的文章
-    blog_id = db.Column(db.Integer, db.ForeignKey('blogs.id'))
+    # 对应的用户
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __repr__(self):
+        return '<Tag %r>' % self.name
 
 
 # 加载用户的回调函数，用 user_id 查找用户并返回用户对象

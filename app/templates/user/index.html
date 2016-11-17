@@ -53,7 +53,7 @@
 							{% if host_user.avatar_url %}
 							<img width="100%" height="100%" src="{{host_user.avatar_url}}" />
 							{% else %}
-							<img width="100%" height="100%" src="../static/img/default_header.jpg" />
+							<img width="100%" height="100%" src="{{ url_for('static', filename='img/default_header.JPG') }}" />
 							{% endif %}
 						</div>
 					</div>
@@ -68,10 +68,10 @@
 					</div>
 					<hr>
 					<div class="row">
-						<a href="{{ url_for('user.categories') }}">
+						<a href="{{ url_for('user.categories', username=host_user.username) }}">
 							<div class="col-md-4 sub-pannel"><b>Cats</b></div>
 						</a>
-						<a href="{{ url_for('user.tags') }}">
+						<a href="{{ url_for('user.tags', username=host_user.username) }}">
 							<div class="col-md-4 sub-pannel"><b>Tags</b></div>
 						</a>
 						<a href="{{ url_for('user.drafts', username=host_user.username) }}">
@@ -81,21 +81,20 @@
 				</div>
 			</div>
 		</div>
+		{% if blogs %}
 		<div class="col-md-8 column Article_list">
 			{% for blog in blogs %}
 			<div class="Articles">
 				<div class="blog-header">
 					<h2>{{ blog.title }}</h2>
 					<p>
-						Posted on {{ (blog.timestamp.date()) }} | In <a href="#">{{ blog.category }}</a>
+						Posted on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
 					</p>
 					<br>
 				</div>
-			<blockquote>
-				<i style=" color: grey; font-size:10px">
-					{{ blog.summary|safe }}
-				</i>
-			</blockquote>
+			<div>
+				{{ blog.summary | safe }}
+			</div>
 	
 			<p style="text-align: center;">
 				<a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}"><button class="btn btn-default" style="border: 2px solid black">Read More >></button></a>
@@ -109,6 +108,27 @@
 				</div>
 			{% endif %}
 		</div>
+		{% elif categories %}
+			<div class="col-md-8 column Article_list">
+			{% for cat in categories %}
+				<a href="{{ url_for('user.category', username=host_user.username, category_name=cat.name) }}">
+					<p>{{ cat.name }}</p>
+				</a>
+			{% endfor %}
+			</div>
+		{% elif tags %}
+			<div class="col-md-8 column Article_list">
+			{% for tag in tags %}
+				<a href="{{ url_for('user.index', username=host_user.username, tag_name=tag.name) }}">
+					<p>{{ tag.name }}</p>
+				</a>
+			{% endfor %}
+			</div>
+		{% else %}
+			<div class="col-md-8 column Article_list">
+				<p>You have nothing!</p>
+			</div>
+		{% endif %}
 	</div>
 </div>
 {% endblock %}

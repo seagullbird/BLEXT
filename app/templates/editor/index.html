@@ -3,16 +3,16 @@
 {% block page_content %}
 <form action id="text_form" method="post" class="form form-horizontal" role="form" name="text_form">		
 	
-	<input type="text" class="form-control" name="title" id="title" placeholder="Blog Title" style="width: 30%">
+	<input type="text" class="form-control" name="title" id="title" placeholder="Blog Title" style="width: 30%" value="{{ title }}">
 	<br>
-	<input type="text" class="form-control" name="category" id="category" placeholder="Category" style="width: 30%">
+	<input type="text" class="form-control" name="category" id="category" placeholder="Category" style="width: 30%" value="{{ category }}">
 	<br>
-	<input type="text" class="form-control" name="tags" id="tags" placeholder="Tags (Separate with ',')" style="width: 30%">
+	<input type="text" class="form-control" name="tags" id="tags" placeholder="Tags (Separate with ',')" style="width: 30%" value="{{ tags }}">
 	<br>
-	<textarea name="summary" id="summary" class="form-control" cols="30" rows="10" style="width: 30%"></textarea>
+	<textarea name="summary" id="summary" class="form-control" cols="30" rows="10" placeholder="Write in Markdown" style="width: 30%">{{ summary_text }}</textarea>
 	<br>
 
-	<textarea name="plainText" id="plainText" placeholder="Write your Markdown content here"></textarea>
+	<textarea name="plainText" id="plainText" placeholder="Write your Markdown content here">{{ text }}</textarea>
     <input type="hidden" id="draft" name="draft"/>
 </form>
 {% endblock %}

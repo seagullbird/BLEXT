@@ -5,7 +5,9 @@
 	<div class="col-md-8 col-md-offset-2 blog-content">
 		<div class="blog-header">
 			<h1>{{ blog.title }}</h1>
-			<p>Posted on {{ (blog.timestamp.date()) }}</p>
+			<p>
+				Posted on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=blog.author.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
+			</p>
 			<br>
 		</div>
 		<div class="blog-body" id="blog-body">
@@ -15,7 +17,7 @@
 	{% if current_user.is_authenticated and current_user.username == blog.author.username %}
 	<div class="col-md-1 col-md-offset-1 control-pannel">
 		 <div class="control-btn">
-		 <a href="#">
+		 <a href="{{ url_for('editor.edit', blog_id=blog.id) }}">
 		 	<button type="button" class="btn btn-info">Edit</button>
 		 </a>
 		 </div>

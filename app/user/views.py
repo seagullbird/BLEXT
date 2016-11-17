@@ -1,7 +1,7 @@
 from . import user
 from flask import render_template, current_app, request, redirect, url_for
 from flask_login import current_user, login_required
-from ..models import Blog, User
+from ..models import Blog, User, Category, Tag
 from .. import db
 
 
@@ -20,18 +20,66 @@ def index(username):
     return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
 
 
-# 文章分类路由
-@login_required
-@user.route('/categories')
+# 文章分类总路由
+@user.route('/<username>/categories')
 def categories(username):
-    pass
+    host_user = User.query.filter_by(username=username).first()
+    categories = []
+    if host_user:
+        # 对于作者的每一篇博客
+        for blog in host_user.blogs:
+            # 如果不是草稿
+            if not blog.draft:
+                categories.append(blog.category)
+        categories = set(categories)
+        return render_template('user/index.html', categories=categories, host_user=host_user)
+    return redirect(url_for('main.page_not_found'))
 
 
-# 文章标签路由
-@login_required
-@user.route('/tags')
+# 单个分类下的文章列表路由
+@user.route('<username>/categories/<category_name>')
+def category(username, category_name):
+    host_user = User.query.filter_by(username=username).first()
+    category = Category.query.filter_by(
+        name=category_name, author_id=host_user.id).first()
+    # 添加分页
+    page = request.args.get('page', 1, type=int)
+    # 每页显示的博客数保存在配置里
+    pagination = Blog.query.filter_by(author_id=host_user.id, category_id=category.id, draft=False).order_by(Blog.timestamp.desc()).paginate(
+        page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
+    # 获得用户所有文章（按时间戳顺序）
+    blogs = pagination.items
+    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
+
+
+# 文章标签总路由
+@user.route('/<username>/tags')
 def tags(username):
-    pass
+    host_user = User.query.filter_by(username=username).first()
+    tags = []
+    if host_user:
+        # 对于作者的每一篇博客
+        for blog in host_user.blogs:
+            if not blog.draft:
+                tags.extend(blog.tags)
+        tags = set(tags)
+        return render_template('user/index.html', tags=tags, host_user=host_user)
+    return redirect(url_for('main.page_not_found'))
+
+
+# 单个标签下的文章列表路由
+@user.route('<username>/tags/<tag_name>')
+def tag(username, tag_name):
+    host_user = User.query.filter_by(username=username).first()
+    tag = Tag.query.filter_by(name=tag_name, author_id=host_user.id).first()
+    # 添加分页
+    page = request.args.get('page', 1, type=int)
+    # 每页显示的博客数保存在配置里
+    pagination = tag.blogs.filter_by(draft=False).order_by(Blog.timestamp.desc()).paginate(
+        page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
+    # 获得用户所有文章（按时间戳顺序）
+    blogs = pagination.items
+    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
 
 
 # 用户草稿路由
