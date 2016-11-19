@@ -34,7 +34,7 @@
                         <li>
                              <a href="{{ url_for('user.index',username=current_user.username) }}">
                                 {% if current_user.blog_title %}
-                                {{current_user.blog_title}}
+                                {{ current_user.blog_title }}
                                 {% else %}
                                 {{current_user.username}}'s BLOG
                                 {% endif %}
