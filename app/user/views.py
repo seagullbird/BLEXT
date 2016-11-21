@@ -33,7 +33,7 @@ def categories(username):
                 categories.append(blog.category)
         categories = set(categories)
         return render_template('user/index.html', categories=categories, host_user=host_user)
-    return redirect(url_for('main.page_not_found'))
+    return render_template('/errors/404.html'), 404
 
 
 # 单个分类下的文章列表路由
@@ -64,7 +64,7 @@ def tags(username):
                 tags.extend(blog.tags)
         tags = set(tags)
         return render_template('user/index.html', tags=tags, host_user=host_user)
-    return redirect(url_for('main.page_not_found'))
+    return render_template('/errors/404.html'), 404
 
 
 # 单个标签下的文章列表路由
@@ -88,7 +88,7 @@ def tag(username, tag_name):
 def drafts(username):
     host_user = User.query.filter_by(username=username).first()
     # 判断是否本人
-    if host_user and current_user.id == host_user.id:
+    if host_user and current_user._get_current_object() == host_user:
         # 添加分页
         page = request.args.get('page', 1, type=int)
         # 每页显示的博客数保存在配置里
@@ -99,7 +99,7 @@ def drafts(username):
         # 返回入口
         draft_enter = 'Home'
         return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user, draft_enter=draft_enter)
-    return redirect(url_for('main.page_not_found'))
+    return render_template('/errors/404.html'), 404
 
 
 # 用户文章路由
@@ -115,7 +115,7 @@ def blog_page(username, blog_id):
     if blog:
         return render_template('user/blog_page.html', blog=blog)
     else:
-        return redirect(url_for('main.page_not_found'))
+        return render_template('/errors/404.html'), 404
 
 
 # 删除用户文章（需要登录才能访问）

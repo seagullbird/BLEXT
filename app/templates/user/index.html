@@ -74,9 +74,11 @@
 						<a href="{{ url_for('user.tags', username=host_user.username) }}">
 							<div class="col-md-4 sub-pannel"><b>Tags</b></div>
 						</a>
+						{% if host_user == current_user %}
 						<a href="{{ url_for('user.drafts', username=host_user.username) }}">
 							<div class="col-md-4 sub-pannel"><b>Drafts</b></div>
 						</a>
+						{% endif %}
 					</div>
 				</div>
 			</div>
