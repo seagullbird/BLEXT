@@ -150,6 +150,48 @@ class Blog(db.Model):
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
 
+    # 更新标签处理
+    def change_tags(self, new_tags):
+        old_tags = self.tags
+        # 求差集，new_tags 中没有而 old_tags 中有的为已删除标签
+        deleted_tags = list(set(old_tags).difference(set(new_tags)))
+        # 删除原有的所有标签
+        self.tags.clear()
+        # 更新新的标签
+        self.tags = new_tags
+        # 对于已删除的标签，如果其下没有任何文章则删除该标签
+        for tag in deleted_tags:
+            if not tag.blogs.all():
+                db.session.delete(tag)
+
+    # 更新分类处理
+    def change_category(self, new_category):
+        old_category = self.category
+        # 如果新分类与原分类不同才处理
+        if new_category != old_category:
+            # 更新分类
+            self.category = new_category
+            # 如果原分类下再没有任何文章则删除原分类
+            if not old_category.blogs.all():
+                db.session.delete(old_category)
+
+    # 删除标签处理（删除文章时）
+    def delete_tags(self):
+        cur_tags = self.tags[:]
+        for tag in cur_tags:
+            tag.blogs.remove(self)
+            # 如果该标签下删除这篇博文后没有其他博文了则删除该标签
+            if not tag.blogs.all():
+                db.session.delete(tag)
+
+    # 删除分类处理（删除文章时）
+    def delete_category(self):
+        cur_category = self.category
+        # 如果该分类下删除这篇博文后没有其他博文了则删除该分类
+        cur_category.blogs.remove(self)
+        if not cur_category.blogs.all():
+            db.session.delete(cur_category)
+
     def __repr__(self):
         return '<Blog %r>' % self.title
 

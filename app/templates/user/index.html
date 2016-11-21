@@ -121,14 +121,14 @@
 		{% elif tags %}
 			<div class="col-md-8 column Article_list">
 			{% for tag in tags %}
-				<a href="{{ url_for('user.index', username=host_user.username, tag_name=tag.name) }}">
+				<a href="{{ url_for('user.tag', username=host_user.username, tag_name=tag.name) }}">
 					<p>{{ tag.name }}</p>
 				</a>
 			{% endfor %}
 			</div>
 		{% else %}
 			<div class="col-md-8 column Article_list">
-				<p>You have nothing!</p>
+				<p>There's nothing here.</p>
 			</div>
 		{% endif %}
 	</div>

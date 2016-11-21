@@ -70,16 +70,12 @@ def index():
             old_blog.title = title
             old_blog.summary = summary
             old_blog.summary_text = summary_text
-            old_blog.category = category
             old_blog.body = blog_text
             old_blog.html = blog_html
             old_blog.author_id = author.id
             old_blog.draft = draft
-            # 删除原来的所有标签
-            old_blog.tags.clear()
-            # 更新新提交的标签
-            for tag in tags:
-                old_blog.tags.append(tag)
+            old_blog.change_category(category)
+            old_blog.change_tags(tags)
             db.session.add(old_blog)
         else:
             # 创建新文章并添加进数据库
