@@ -158,7 +158,7 @@ class Blog(db.Model):
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
 
-    # 在服务器端将 markdown 转换为 html 并清理
+    # 在服务器端将博客正文 markdown 转换为 html 并使用 bleach 过滤标签
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         markdown = mistune.Markdown()
@@ -169,7 +169,7 @@ class Blog(db.Model):
             markdown(value),
             tags=allowed_tags, strip=True))
 
-    # 在服务器端将 markdown 转换为 html 并清理
+    # 在服务器端将文章摘要 markdown 转换为 html 并使用 bleach 过滤标签
     @staticmethod
     def on_changed_summary_text(target, value, oldvalue, initiator):
         markdown = mistune.Markdown()
@@ -226,15 +226,15 @@ class Blog(db.Model):
     def to_json(self):
         # _external=True 指定生成完整 URL （而不是相对 URL ）
         return {
-            'url': url_for('api.get_post', blog_id=self.id, _external=True),
+            'url': url_for('api.get_blog', blog_id=self.id, _external=True),
             'title': self.title,
             'summary_text': self.summary_text,
             'body': self.body,
-            'timestamp': self.timestamp,
-            'author': url_for('api.get_user', author_id=self.author_id,
-                              _external=True),
-            'category': url_for('api.get_blog_category', blog_id=self.id, _external=True),
-            'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
+            'timestamp': self.timestamp
+            # 'author': url_for('api.get_user', author_id=self.author_id,
+            #                   _external=True),
+            # 'category': url_for('api.get_blog_category', blog_id=self.id, _external=True),
+            # 'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
         }
 
     @staticmethod
@@ -274,6 +274,16 @@ class Category(db.Model):
     # 对应的用户
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    # 从分类名 category_name 和用户 id 生成新分类（如果不存在）
+    @staticmethod
+    def generate_category(category_name, author_id):
+        category = Category.query.filter_by(
+            name=category_name, author_id=author_id).first()
+        # 如果当前用户名下不存在这个分类则新建：
+        if not category:
+            category = Category(name=category_name, author_id=author_id)
+        return category
+
     def __repr__(self):
         return '<Category %r>' % self.name
 
@@ -287,6 +297,25 @@ class Tag(db.Model):
     name = db.Column(db.String(20))
     # 对应的用户
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    # 从标签名 list 和 用户 id 生成 Tag 类型列表
+    @staticmethod
+    def generate_tags(tag_names, author_id):
+        tags = []
+        # 处理文章标签
+        for tag_name in tag_names:
+            tag_name = tag_name.strip()
+            if tag_name:
+                # 在用户名下查询标签名
+                tag = Tag.query.filter_by(
+                    name=tag_name, author_id=author_id).first()
+                # 如果不存在则新建并添加
+                if not tag:
+                    tag = Tag(name=tag_name, author_id=author_id)
+                    # 添加进数据库
+                    db.session.add(tag)
+                tags.append(tag)
+        return tags
 
     def __repr__(self):
         return '<Tag %r>' % self.name

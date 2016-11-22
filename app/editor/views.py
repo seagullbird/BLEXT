@@ -30,31 +30,15 @@ def index():
         if request.form.get('draft') == 'false':
             draft = False
 
-        # 获得分类名并通过其查询数据库
+        # 获得分类名（str类型）
         category_name = request.form.get('category', 'Category unset')
-        category = Category.query.filter_by(
-            name=category_name, author_id=author.id).first()
-        # 如果当前用户名下不存在这个分类则新建：
-        if not category:
-            category = Category(name=category_name, author=author)
-
+        # 获得 Category 对象
+        category = Category.generate_category(category_name, author.id)
         # 获得标签名（保存在list里）
         tag_names = request.form.get('tags', '').split(',')
-        tags = []
-        # 处理文章标签
-        for tag_name in tag_names:
-            tag_name = tag_name.strip()
-            if tag_name:
-                # 在用户名下查询标签名
-                tag = Tag.query.filter_by(
-                    name=tag_name, author_id=author.id).first()
-                # 如果不存在则新建并添加
-                if not tag:
-                    tag = Tag(name=tag_name, author=author)
-                    # 添加进数据库
-                    db.session.add(tag)
-                tags.append(tag)
-
+        # 获得标签对象列表
+        tags = Tag.generate_tags(tag_names, author.id)
+        # 如果是编辑已存在文章，form 中应该有已存在文章的id
         blog_id = request.form.get('blog_id')
         # 如果表单中的 blog_id 有值说明该文章是重新编辑文章，不需创建新的
         if blog_id:
@@ -69,11 +53,8 @@ def index():
             db.session.add(old_blog)
         else:
             # 创建新文章并添加进数据库
-            new_blog = Blog(title=title, summary_text=summary_text,
-                            category=category, body=blog_text, author=author, draft=draft)
-            # 建立新文章及其标签的对应关系
-            for tag in tags:
-                new_blog.tags.append(tag)
+            new_blog = Blog(title=title, summary_text=summary_text, category=category,
+                            tags=tags, body=blog_text, author_id=author.id, draft=draft)
             db.session.add(new_blog)
 
         if not draft:
