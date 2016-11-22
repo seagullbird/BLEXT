@@ -30,4 +30,5 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev8.0: Completed `cats` & `tags`, implemented editing function in blog page, `edit` button. —— Completed almost everything I intended to implement. Except: Funtion for the `Help` button in editor page; Both front and backend input validation; POTENTIAL BUGS and NASTY FRONT PAGES.
 - dev8.1: Fixed issue: re-editing of an exsiting blog will create a new blog instead of covering the old one.
 - dev8.2: Complete re-editing, no bugs in re-editing `cats` and `tags`.
+- dev9.0: Initialization of api\_1_0.
 
