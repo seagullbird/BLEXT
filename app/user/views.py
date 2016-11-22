@@ -25,7 +25,7 @@ def index(username):
 def categories(username):
     host_user = User.query.filter_by(username=username).first()
     if host_user:
-        return render_template('user/index.html', categories=host_user.categories.all(), host_user=host_user)
+        return render_template('user/categories.html', categories=host_user.categories.all(), host_user=host_user)
     return render_template('/errors/404.html'), 404
 
 
@@ -56,7 +56,7 @@ def category(username, category_name):
 def tags(username):
     host_user = User.query.filter_by(username=username).first()
     if host_user:
-        return render_template('user/index.html', tags=host_user.tags.all(), host_user=host_user)
+        return render_template('user/tags.html', tags=host_user.tags.all(), host_user=host_user)
     return render_template('/errors/404.html'), 404
 
 
@@ -105,16 +105,14 @@ def drafts(username):
 @user.route('/<username>/<blog_id>')
 def blog_page(username, blog_id):
     # 利用blog_id从数据库读到blog对象并返回给模版
-    # 如果不是作者本人访问：
-    if not current_user.is_authenticated or current_user.username != username:
-        host_user = User.query.filter_by(username=username).first()
-        blog = host_user.blogs.filter_by(id=blog_id).first()
-    else:
-        blog = current_user.blogs.filter_by(id=blog_id).first()
-    if blog:
-        return render_template('user/blog_page.html', blog=blog)
-    else:
-        return render_template('/errors/404.html'), 404
+    host_user = User.query.filter_by(username=username).first()
+    blog = Blog.query.filter_by(id=blog_id).first()
+    # 如果访问的用户和文章存在：
+    if host_user and blog:
+        # 如果当前用户已登录并且 id 和被访问用户相同（是本人）或者当前文章不是草稿：
+        if (current_user.is_authenticated and host_user.id == current_user.id) or not blog.draft:
+            return render_template('/user/blog_page.html', blog=blog, host_user=host_user)
+    return render_template('/errors/404.html'), 404
 
 
 # 删除用户文章（需要登录才能访问）

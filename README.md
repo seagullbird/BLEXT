@@ -31,4 +31,5 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev8.1: Fixed issue: re-editing of an exsiting blog will create a new blog instead of covering the old one.
 - dev8.2: Complete re-editing, no bugs in re-editing `cats` and `tags`.
 - dev9.0: Initialization of api\_1_0.
+- dev9.1: Bug fixing before creating api.
 

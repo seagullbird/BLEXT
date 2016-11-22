@@ -1,0 +1,13 @@
+{% extends "user/base.html" %}
+{% import "user/_macros.html" as macros %}
+{% block right_panel %}
+	{% if categories %}
+		{% for cat in categories %}
+					<a href="{{ url_for('user.category', username=host_user.username, category_name=cat.name) }}">
+						<p>{{ cat.name }}</p>
+					</a>
+		{% endfor %}
+	{% else %}
+		<p>There's nothing here.</p>
+	{% endif %}
+{% endblock %}

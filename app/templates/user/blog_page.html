@@ -5,9 +5,15 @@
 	<div class="col-md-8 col-md-offset-2 blog-content">
 		<div class="blog-header">
 			<h1>{{ blog.title }}</h1>
-			<p>
-				Posted on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=blog.author.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
-			</p>
+			{% if not blog.draft %}
+				<p>
+					Posted on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
+				</p>
+			{% else %}
+				<p>
+					Saved draft on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
+				</p>
+			{% endif %}
 			<br>
 		</div>
 		<div class="blog-body" id="blog-body">
