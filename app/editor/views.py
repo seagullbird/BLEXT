@@ -3,7 +3,6 @@ from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import current_user
 from .. import db
 from ..models import Blog, Category, Tag
-import mistune
 
 # 对于“用户重新编辑已存在文章后发布不会覆盖原文章而是产生新的一篇文章”问题的解决办法：
 # 在编辑器页面中添加隐藏（hidden）标签 #blog_id，编辑器主页（下面的 index 函数）收到任何
@@ -18,21 +17,14 @@ def index():
     # 如果是 POST 请求，说明用户提交了一篇新文章
     # 接下来是通过 POST 的表单中的数据在数据库中创建新文章
     if request.method == 'POST':
-        # 初始化markdown解析器
-        markdown = mistune.Markdown()
         # 获得作者
         author = current_user._get_current_object()
         # 获得标题
         title = request.form.get('title', 'Title unset')
         # 获得摘要（纯文本）
         summary_text = request.form.get('summary', 'Summary unset')
-        # 获得摘要（富文本）
-        summary = markdown(summary_text)
         # 获得纯文本正文
         blog_text = request.form.get('plainText', '')
-        # 获得富文本正文
-        # 利用markdown解析器将markdown转换为html
-        blog_html = markdown(blog_text)
         # 草稿
         draft = True
         if request.form.get('draft') == 'false':
@@ -68,10 +60,8 @@ def index():
         if blog_id:
             old_blog = Blog.query.filter_by(id=int(blog_id)).first()
             old_blog.title = title
-            old_blog.summary = summary
             old_blog.summary_text = summary_text
             old_blog.body = blog_text
-            old_blog.html = blog_html
             old_blog.author_id = author.id
             old_blog.draft = draft
             old_blog.change_category(category)
@@ -79,8 +69,8 @@ def index():
             db.session.add(old_blog)
         else:
             # 创建新文章并添加进数据库
-            new_blog = Blog(title=title, summary=summary, summary_text=summary_text, category=category, body=blog_text,
-                            html=blog_html, author=author, draft=draft)
+            new_blog = Blog(title=title, summary_text=summary_text,
+                            category=category, body=blog_text, author=author, draft=draft)
             # 建立新文章及其标签的对应关系
             for tag in tags:
                 new_blog.tags.append(tag)

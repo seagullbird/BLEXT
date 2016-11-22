@@ -32,4 +32,5 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev8.2: Complete re-editing, no bugs in re-editing `cats` and `tags`.
 - dev9.0: Initialization of api\_1_0.
 - dev9.1: Bug fixing before creating api.
+- dev9.2: Api 1.0 basic exceptions, error handlers, JSON to/from implemented without debugging.
 

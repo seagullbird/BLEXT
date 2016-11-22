@@ -2,8 +2,11 @@ from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+from flask import current_app, url_for
 from datetime import datetime
+from app.exceptions import ValidationError
+import mistune
+import bleach
 
 
 # 用户模型
@@ -89,28 +92,33 @@ class User(db.Model, UserMixin):
         db.session.add(self)
         return True
 
-    # 生成修改邮件地址令牌
-    def generate_email_change_token(self, new_email, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'change_email': self.id, 'new_email': new_email})
+    # 生成 api 确认令牌
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'],
+                       expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('ascii')
 
-    # 修改邮件地址
-    def change_email(self, token):
+    # 验证 api 确认令牌
+    @staticmethod
+    def verify_auth_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
-            return False
-        if data.get('change_email') != self.id:
-            return False
-        new_email = data.get('new_email')
-        if new_email is None:
-            return False
-        if self.query.filter_by(email=new_email).first() is not None:
-            return False
-        self.email = new_email
-        db.session.add(self)
-        return True
+            return None
+        return User.query.get(data['id'])
+
+    # 将用户资源转化为JSON格式的序列化字典（用于api）
+    def to_json(self):
+        return {
+            'url': url_for('api.get_user', user_id=self.id, _external=True),
+            'username': self.username,
+            'blogs': url_for('api.get_user_blogs', user_id=self.id, _external=True),
+            'categories': url_for('api.get_user_categories', user_id=self.id, _external=True),
+            'tags': url_for('api.get_user_tags', user_id=self.id, _external=True),
+            'avatar_url': self.avatar_url,
+            'blog_count': self.blogs.count()
+        }
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -149,6 +157,28 @@ class Blog(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
+
+    # 在服务器端将 markdown 转换为 html 并清理
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        markdown = mistune.Markdown()
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.html = bleach.linkify(bleach.clean(
+            markdown(value),
+            tags=allowed_tags, strip=True))
+
+    # 在服务器端将 markdown 转换为 html 并清理
+    @staticmethod
+    def on_changed_summary_text(target, value, oldvalue, initiator):
+        markdown = mistune.Markdown()
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.summary = bleach.linkify(bleach.clean(
+            markdown(value),
+            tags=allowed_tags, strip=True))
 
     # 更新标签处理
     def change_tags(self, new_tags):
@@ -192,8 +222,44 @@ class Blog(db.Model):
         if not cur_category.blogs.all():
             db.session.delete(cur_category)
 
+    # 将博客文章资源转化为JSON格式的序列化字典（用于api）
+    def to_json(self):
+        # _external=True 指定生成完整 URL （而不是相对 URL ）
+        return {
+            'url': url_for('api.get_post', blog_id=self.id, _external=True),
+            'title': self.title,
+            'summary_text': self.summary_text,
+            'body': self.body,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', author_id=self.author_id,
+                              _external=True),
+            'category': url_for('api.get_blog_category', blog_id=self.id, _external=True),
+            'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
+        }
+
+    @staticmethod
+    def from_json(json_post):
+        title = json_post.get('title')
+        summary_text = json_post.get('summary_text')
+        body = json_post.get('body')
+
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+        if title is None or title == '':
+            raise ValidationError('post does not have a title')
+        if summary_text is None or summary_text == '':
+            raise ValidationError('post does not have a summary')
+        return Blog(title=title, summary_text=summary_text, body=body)
+
     def __repr__(self):
         return '<Blog %r>' % self.title
+
+
+# 将 on_change_body 函数注册到 body 字段上
+# 只要 body 字段设定了新值，on_change_body 函数就会自动调用
+db.event.listen(Blog.body, 'set', Blog.on_changed_body)
+# summary 同理
+db.event.listen(Blog.summary_text, 'set', Blog.on_changed_summary_text)
 
 
 # 文章分类模型（一篇文章对应一个分类，一个分类对应多篇文章）
