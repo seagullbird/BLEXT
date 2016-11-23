@@ -1,7 +1,7 @@
 from flask import jsonify, g, request, current_app, url_for
 from ..models import Blog, Category, Tag
 from . import api
-from .errors import bad_request
+from .errors import bad_request, forbidden
 from .. import db
 
 
@@ -60,17 +60,31 @@ def get_blog_tags(blog_id):
 def new_blog():
     blog = Blog.from_json(request.json)
     blog.author = g.current_user
-    # 获得分类名（str类型）
-    category_name = request.json.get('category')
-    # 获得 Category 对象
-    category = Category.generate_category(category_name, g.current_user.id)
-    # 获得标签名（保存在list里）
-    tag_names = request.json.get('tags').split(',')
-    # 获得标签对象列表
-    tags = Tag.generate_tags(tag_names, g.current_user.id)
-    blog.category = category
-    blog.tags = tags
     db.session.add(blog)
     db.session.commit()
     return jsonify(blog.to_json()), 201, \
         {'Location': url_for('api.get_blog', blog_id=blog.id, _external=True)}
+
+
+# 更新文章端点
+@api.route('/blogs/<int:blog_id>', methods=['PUT'])
+def edit_blog(blog_id):
+    blog = Blog.query.get_or_404(blog_id)
+    if blog:
+        if blog.author_id == g.current_user.id:
+            blog.title = request.json.get('title')
+            blog.summary_text = request.json.get('summary_text')
+            blog.body = request.json.get('body')
+            blog.draft = False
+            if request.json.get('draft') == 'true':
+                blog.draft = True
+            category = Category.generate_category(
+                request.json.get('category'), blog.author_id)
+            tags = Tag.generate_tags(request.json.get(
+                'tags').split(','), blog.author_id)
+            blog.change_category(category)
+            blog.change_tags(tags)
+            db.session.add(blog)
+            return jsonify(blog.to_json())
+        return forbidden('Insufficient permissions')
+    return bad_request('Blog not found')

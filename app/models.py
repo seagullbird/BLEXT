@@ -2,7 +2,7 @@ from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app, url_for
+from flask import current_app, url_for, request, g
 from datetime import datetime
 from app.exceptions import ValidationError
 import mistune
@@ -244,7 +244,10 @@ class Blog(db.Model):
         summary_text = json_blog.get('summary_text')
         body = json_blog.get('body')
         draft = json_blog.get('draft')
-
+        # 获得 Category 对象
+        category = Category.generate_category(request.json.get('category'), g.current_user.id)
+        # 获得 Tag 对象列表
+        tags = Tag.generate_tags(request.json.get('tags').split(','), g.current_user.id)
         if body is None or body == '':
             raise ValidationError('blog does not have a body')
         if title is None or title == '':
@@ -256,7 +259,7 @@ class Blog(db.Model):
         if draft == 'true':
             draft = True
         draft = False
-        return Blog(title=title, summary_text=summary_text, body=body, draft=draft)
+        return Blog(title=title, summary_text=summary_text, body=body, draft=draft, category=category, tags=tags)
 
     def __repr__(self):
         return '<Blog %r>' % self.title

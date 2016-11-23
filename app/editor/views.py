@@ -20,24 +20,20 @@ def index():
         # 获得作者
         author = current_user._get_current_object()
         # 获得标题
-        title = request.form.get('title', 'Title unset')
+        title = request.form.get('title')
         # 获得摘要（纯文本）
-        summary_text = request.form.get('summary', 'Summary unset')
+        summary_text = request.form.get('summary')
         # 获得纯文本正文
-        blog_text = request.form.get('plainText', '')
+        blog_text = request.form.get('plainText')
         # 草稿
         draft = True
         if request.form.get('draft') == 'false':
             draft = False
 
-        # 获得分类名（str类型）
-        category_name = request.form.get('category', 'Category unset')
         # 获得 Category 对象
-        category = Category.generate_category(category_name, author.id)
-        # 获得标签名（保存在list里）
-        tag_names = request.form.get('tags', '').split(',')
-        # 获得标签对象列表
-        tags = Tag.generate_tags(tag_names, author.id)
+        category = Category.generate_category(request.form.get('category'), author.id)
+        # 获得 Tag 对象列表
+        tags = Tag.generate_tags(request.form.get('tags', '').split(','), author.id)
         # 如果是编辑已存在文章，form 中应该有已存在文章的id
         blog_id = request.form.get('blog_id')
         # 如果表单中的 blog_id 有值说明该文章是重新编辑文章，不需创建新的
