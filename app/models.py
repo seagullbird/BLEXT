@@ -98,7 +98,7 @@ class User(db.Model, UserMixin):
                        expires_in=expiration)
         return s.dumps({'id': self.id}).decode('ascii')
 
-    # 验证 api 确认令牌
+    # 验证 api 确认令牌（如果验证通过则返回用户对象）
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -111,11 +111,11 @@ class User(db.Model, UserMixin):
     # 将用户资源转化为JSON格式的序列化字典（用于api）
     def to_json(self):
         return {
-            'url': url_for('api.get_user', user_id=self.id, _external=True),
+            'url': url_for('api.get_user', _external=True),
             'username': self.username,
-            'blogs': url_for('api.get_user_blogs', user_id=self.id, _external=True),
-            'categories': url_for('api.get_user_categories', user_id=self.id, _external=True),
-            'tags': url_for('api.get_user_tags', user_id=self.id, _external=True),
+            'blogs': url_for('api.get_blogs', _external=True),
+            'categories': url_for('api.get_user_categories', _external=True),
+            'tags': url_for('api.get_user_tags', _external=True),
             'avatar_url': self.avatar_url,
             'blog_count': self.blogs.count()
         }
@@ -227,29 +227,36 @@ class Blog(db.Model):
         # _external=True 指定生成完整 URL （而不是相对 URL ）
         return {
             'url': url_for('api.get_blog', blog_id=self.id, _external=True),
+            'id': self.id,
             'title': self.title,
             'summary_text': self.summary_text,
             'body': self.body,
-            'timestamp': self.timestamp
-            # 'author': url_for('api.get_user', author_id=self.author_id,
-            #                   _external=True),
-            # 'category': url_for('api.get_blog_category', blog_id=self.id, _external=True),
-            # 'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
+            'timestamp': self.timestamp,
+            'draft': self.draft,
+            'author': url_for('api.get_user', _external=True),
+            'category': url_for('api.get_blog_category', blog_id=self.id, _external=True),
+            'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
         }
 
     @staticmethod
-    def from_json(json_post):
-        title = json_post.get('title')
-        summary_text = json_post.get('summary_text')
-        body = json_post.get('body')
+    def from_json(json_blog):
+        title = json_blog.get('title')
+        summary_text = json_blog.get('summary_text')
+        body = json_blog.get('body')
+        draft = json_blog.get('draft')
 
         if body is None or body == '':
-            raise ValidationError('post does not have a body')
+            raise ValidationError('blog does not have a body')
         if title is None or title == '':
-            raise ValidationError('post does not have a title')
+            raise ValidationError('blog does not have a title')
         if summary_text is None or summary_text == '':
-            raise ValidationError('post does not have a summary')
-        return Blog(title=title, summary_text=summary_text, body=body)
+            raise ValidationError('blog does not have a summary')
+        if draft is None or draft == '':
+            raise ValidationError('blog does not have a draft value')
+        if draft == 'true':
+            draft = True
+        draft = False
+        return Blog(title=title, summary_text=summary_text, body=body, draft=draft)
 
     def __repr__(self):
         return '<Blog %r>' % self.title
@@ -284,6 +291,11 @@ class Category(db.Model):
             category = Category(name=category_name, author_id=author_id)
         return category
 
+    def to_json(self):
+        return {
+            'name': self.name
+        }
+
     def __repr__(self):
         return '<Category %r>' % self.name
 
@@ -316,6 +328,11 @@ class Tag(db.Model):
                     db.session.add(tag)
                 tags.append(tag)
         return tags
+
+    def to_json(self):
+        return {
+            'name': self.name
+        }
 
     def __repr__(self):
         return '<Tag %r>' % self.name

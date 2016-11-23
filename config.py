@@ -17,6 +17,8 @@ class Config:
     BLEXT_ADMIN = os.environ.get('BLEXT_ADMIN')
     # 用户博客主页每页显示文章数
     BLEXT_BLOGS_PER_PAGE = 5
+    # API每次get_blogs请求返回的每页文章数
+    API_BLOGS_PER_PAGE = 5
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
