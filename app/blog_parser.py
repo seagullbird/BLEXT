@@ -18,19 +18,27 @@ import re
 
 
 def parse(body):
+    body_pattern = r'^---([\s\S]*)---[\s\S]*?([\s\S]*)<!-- more -->([\s\S]*)$'
+    header_pattern = r'^title:\s(.*?)[\r\n|\n|\r][\s\S]*?categories:\s+([\s\S]*?)[\r\n|\r|\n][\s\S]*?tags:\s+(.*?)$'
+    title = ''
+    category = ''
+    tags = ''
+    summary_text = ''
+    content = ''
+    header = ''
     try:
-        body_pattern = r'^---([\s\S]*)---[\s\S]*?([\s\S]*)<!-- more -->([\s\S]*)$'
         m = re.match(body_pattern, body)
         header = m.group(1).strip()
-        print(header)
         summary_text = m.group(2).strip()
         content = m.group(3).strip()
-        header_pattern = r'^title:\s(.*?)[\r\n|\n|\r][\s\S]*?categories:\s+([\s\S]*?)[\r\n|\r|\n][\s\S]*?tags:\s+(.*?)$'
+    except Exception as e:
+        print(e, 'wrong match in body parsing.')
+    try:
         m = re.match(header_pattern, header)
-        title = m.group(1)
-        category = m.group(2)
-        tags = m.group(3)
-        return title, category, tags, summary_text, content
-    except AttributeError as e:
-        print(e)
-        return '', '', '', '', ''
+        title = m.group(1).strip()
+        category = m.group(2).strip()
+        tags = m.group(3).strip()
+    except Exception as e:
+        print(e, 'wrong match in header parsing.')
+
+    return title, category, tags, summary_text, content

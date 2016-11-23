@@ -37,4 +37,5 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev9.4: Api able to get user information and blogs and cats and tags beastifully. Updating an exsiting blog is the next thing to do.
 - dev9.5: Finished api 1.0. All passed test with httpie. Don't know if there are remianing bugs.
 - dev9.6: Refactored `blog_parser.py` and restarted it. Changed the way of input.
+- dev9.6.1: Slight changes.
 

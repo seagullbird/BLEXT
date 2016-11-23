@@ -165,7 +165,7 @@ class Blog(db.Model):
         # html中允许的html标签
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p']
+                        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']
         # 利用parse函数从value（也就是被改变的body）值中解析出各项属性并赋值
         title, category_name, tag_names, summary_text, content = parse(value)
         target.title = title
