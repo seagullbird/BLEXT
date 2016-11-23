@@ -19,38 +19,23 @@ def index():
     if request.method == 'POST':
         # 获得作者
         author = current_user._get_current_object()
-        # 获得标题
-        title = request.form.get('title')
-        # 获得摘要（纯文本）
-        summary_text = request.form.get('summary')
         # 获得纯文本正文
         blog_text = request.form.get('plainText')
         # 草稿
         draft = True
         if request.form.get('draft') == 'false':
             draft = False
-
-        # 获得 Category 对象
-        category = Category.generate_category(request.form.get('category'), author.id)
-        # 获得 Tag 对象列表
-        tags = Tag.generate_tags(request.form.get('tags', '').split(','), author.id)
         # 如果是编辑已存在文章，form 中应该有已存在文章的id
         blog_id = request.form.get('blog_id')
         # 如果表单中的 blog_id 有值说明该文章是重新编辑文章，不需创建新的
         if blog_id:
             old_blog = Blog.query.filter_by(id=int(blog_id)).first()
-            old_blog.title = title
-            old_blog.summary_text = summary_text
-            old_blog.body = blog_text
-            old_blog.author_id = author.id
             old_blog.draft = draft
-            old_blog.change_category(category)
-            old_blog.change_tags(tags)
+            old_blog.body = blog_text
             db.session.add(old_blog)
         else:
             # 创建新文章并添加进数据库
-            new_blog = Blog(title=title, summary_text=summary_text, category=category,
-                            tags=tags, body=blog_text, author_id=author.id, draft=draft)
+            new_blog = Blog(body=blog_text, author_id=author.id, draft=draft)
             db.session.add(new_blog)
 
         if not draft:
@@ -69,7 +54,7 @@ def index():
         # 查找该博文如果存在：
         if blog:
             # 将已有内容渲染到页面上，并附上 blog_id 作为隐藏标签的值
-            return render_template('editor/index.html', title=blog.title, category=blog.category.name, tags=','.join([tag.name for tag in blog.tags]), summary_text=blog.summary_text, text=blog.body, blog_id=blog_id)
+            return render_template('editor/index.html', title=blog.title, category_id=blog.category_id, tags=','.join([tag.name for tag in blog.tags]), summary_text=blog.summary_text, text=blog.body, blog_id=blog_id)
     return render_template('editor/index.html')
 
 

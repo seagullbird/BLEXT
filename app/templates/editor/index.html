@@ -1,17 +1,7 @@
 {% extends "editor/base.html" %} 
 
 {% block page_content %}
-<form action id="text_form" method="post" class="form form-horizontal" role="form" name="text_form">		
-	
-	<input type="text" class="form-control" name="title" id="title" placeholder="Blog Title" style="width: 30%" value="{{ title }}">
-	<br>
-	<input type="text" class="form-control" name="category" id="category" placeholder="Category" style="width: 30%" value="{{ category }}">
-	<br>
-	<input type="text" class="form-control" name="tags" id="tags" placeholder="Tags (Separate with ',')" style="width: 30%" value="{{ tags }}">
-	<br>
-	<textarea name="summary" id="summary" class="form-control" cols="30" rows="10" placeholder="Write a summary in Markdown" style="width: 30%">{{ summary_text }}</textarea>
-	<br>
-
+<form action id="text_form" method="post" class="form form-horizontal" role="form" name="text_form">	
 	<textarea name="plainText" id="plainText" placeholder="Write your Markdown content here">{{ text }}</textarea>
     <input type="hidden" id="draft" name="draft"/>
     <input type="hidden" id="blog_id" name="blog_id" value="{{ blog_id }}" />

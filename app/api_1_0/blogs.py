@@ -3,6 +3,7 @@ from ..models import Blog, Category, Tag
 from . import api
 from .errors import bad_request, forbidden
 from .. import db
+from app.exceptions import ValidationError
 
 
 # 当前用户的所有文章端点
@@ -58,8 +59,16 @@ def get_blog_tags(blog_id):
 # 发布新文章端点
 @api.route('/blogs/', methods=['POST'])
 def new_blog():
-    blog = Blog.from_json(request.json)
-    blog.author = g.current_user
+    body = request.json.get('body')
+    draft = request.json.get('draft')
+    if body is None or body == '':
+        raise ValidationError('blog does not have a body')
+    if draft is None or draft == '':
+        raise ValidationError('blog does not have a draft value')
+    if draft == 'true':
+        draft = True
+    draft = False
+    blog = Blog(body=body, draft=draft, author_id=g.current_user.id)
     db.session.add(blog)
     db.session.commit()
     return jsonify(blog.to_json()), 201, \
@@ -72,19 +81,12 @@ def edit_blog(blog_id):
     blog = Blog.query.get_or_404(blog_id)
     if blog:
         if blog.author_id == g.current_user.id:
-            blog.title = request.json.get('title')
-            blog.summary_text = request.json.get('summary_text')
             blog.body = request.json.get('body')
             blog.draft = False
             if request.json.get('draft') == 'true':
                 blog.draft = True
-            category = Category.generate_category(
-                request.json.get('category'), blog.author_id)
-            tags = Tag.generate_tags(request.json.get(
-                'tags').split(','), blog.author_id)
-            blog.change_category(category)
-            blog.change_tags(tags)
             db.session.add(blog)
+            db.session.commit()
             return jsonify(blog.to_json())
         return forbidden('Insufficient permissions')
     return bad_request('Blog not found')

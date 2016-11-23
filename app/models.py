@@ -4,9 +4,9 @@ from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, url_for, request, g
 from datetime import datetime
-from app.exceptions import ValidationError
 import mistune
 import bleach
+from .blog_parser import parse
 
 
 # 用户模型
@@ -158,27 +158,26 @@ class Blog(db.Model):
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
 
-    # 在服务器端将博客正文 markdown 转换为 html 并使用 bleach 过滤标签
+    # 当body属性更新时，自动从body中解析出其余各项属性并更新（或新建）
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         markdown = mistune.Markdown()
+        # html中允许的html标签
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'p']
+        # 利用parse函数从value（也就是被改变的body）值中解析出各项属性并赋值
+        title, category_name, tag_names, summary_text, content = parse(value)
+        target.title = title
+        target.summary_text = summary_text
+        target.summary = markdown(summary_text)
         target.html = bleach.linkify(bleach.clean(
-            markdown(value),
+            markdown(content),
             tags=allowed_tags, strip=True))
-
-    # 在服务器端将文章摘要 markdown 转换为 html 并使用 bleach 过滤标签
-    @staticmethod
-    def on_changed_summary_text(target, value, oldvalue, initiator):
-        markdown = mistune.Markdown()
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p']
-        target.summary = bleach.linkify(bleach.clean(
-            markdown(value),
-            tags=allowed_tags, strip=True))
+        target.change_category(Category.generate_category(
+            category_name, target.author_id))
+        target.change_tags(Tag.generate_tags([t.strip() for t in tag_names.strip(
+            '[').strip(']').split(',')], target.author_id))
 
     # 更新标签处理
     def change_tags(self, new_tags):
@@ -197,13 +196,16 @@ class Blog(db.Model):
     # 更新分类处理
     def change_category(self, new_category):
         old_category = self.category
-        # 如果新分类与原分类不同才处理
-        if new_category != old_category:
-            # 更新分类
+        if old_category:
+            # 如果新分类与原分类不同才处理
+            if new_category != old_category:
+                # 更新分类
+                self.category = new_category
+                # 如果原分类下再没有任何文章则删除原分类
+                if not old_category.blogs.all():
+                    db.session.delete(old_category)
+        else:
             self.category = new_category
-            # 如果原分类下再没有任何文章则删除原分类
-            if not old_category.blogs.all():
-                db.session.delete(old_category)
 
     # 删除标签处理（删除文章时）
     def delete_tags(self):
@@ -217,10 +219,11 @@ class Blog(db.Model):
     # 删除分类处理（删除文章时）
     def delete_category(self):
         cur_category = self.category
-        # 如果该分类下删除这篇博文后没有其他博文了则删除该分类
-        cur_category.blogs.remove(self)
-        if not cur_category.blogs.all():
-            db.session.delete(cur_category)
+        if cur_category:
+            # 如果该分类下删除这篇博文后没有其他博文了则删除该分类
+            cur_category.blogs.remove(self)
+            if not cur_category.blogs.all():
+                db.session.delete(cur_category)
 
     # 将博客文章资源转化为JSON格式的序列化字典（用于api）
     def to_json(self):
@@ -238,29 +241,6 @@ class Blog(db.Model):
             'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
         }
 
-    @staticmethod
-    def from_json(json_blog):
-        title = json_blog.get('title')
-        summary_text = json_blog.get('summary_text')
-        body = json_blog.get('body')
-        draft = json_blog.get('draft')
-        # 获得 Category 对象
-        category = Category.generate_category(request.json.get('category'), g.current_user.id)
-        # 获得 Tag 对象列表
-        tags = Tag.generate_tags(request.json.get('tags').split(','), g.current_user.id)
-        if body is None or body == '':
-            raise ValidationError('blog does not have a body')
-        if title is None or title == '':
-            raise ValidationError('blog does not have a title')
-        if summary_text is None or summary_text == '':
-            raise ValidationError('blog does not have a summary')
-        if draft is None or draft == '':
-            raise ValidationError('blog does not have a draft value')
-        if draft == 'true':
-            draft = True
-        draft = False
-        return Blog(title=title, summary_text=summary_text, body=body, draft=draft, category=category, tags=tags)
-
     def __repr__(self):
         return '<Blog %r>' % self.title
 
@@ -268,8 +248,6 @@ class Blog(db.Model):
 # 将 on_change_body 函数注册到 body 字段上
 # 只要 body 字段设定了新值，on_change_body 函数就会自动调用
 db.event.listen(Blog.body, 'set', Blog.on_changed_body)
-# summary 同理
-db.event.listen(Blog.summary_text, 'set', Blog.on_changed_summary_text)
 
 
 # 文章分类模型（一篇文章对应一个分类，一个分类对应多篇文章）
