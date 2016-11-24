@@ -1,9 +1,9 @@
 from flask import jsonify, g, request, current_app, url_for
-from ..models import Blog, Category, Tag
+from ..models import Blog
 from . import api
 from .errors import bad_request, forbidden
 from .. import db
-from app.exceptions import ValidationError
+from app.exceptions import ValidationError, ParsingError
 
 
 # 当前用户的所有文章端点
@@ -62,17 +62,22 @@ def new_blog():
     body = request.json.get('body')
     draft = request.json.get('draft')
     if body is None or body == '':
-        raise ValidationError('blog does not have a body')
+        return bad_request('blog does not have a body')
     if draft is None or draft == '':
-        raise ValidationError('blog does not have a draft value')
+        return bad_request('blog does not have a draft value')
     if draft == 'true':
         draft = True
     draft = False
-    blog = Blog(body=body, draft=draft, author_id=g.current_user.id)
-    db.session.add(blog)
-    db.session.commit()
-    return jsonify(blog.to_json()), 201, \
-        {'Location': url_for('api.get_blog', blog_id=blog.id, _external=True)}
+    try:
+        blog = Blog(body=body, draft=draft, author_id=g.current_user.id)
+        db.session.add(blog)
+        db.session.commit()
+        return jsonify(blog.to_json()), 201, \
+            {'Location': url_for(
+                'api.get_blog', blog_id=blog.id, _external=True)}
+    except ParsingError as e:
+        print(e)
+        return bad_request('There is something wrong in your format. Committing abolished.')
 
 
 # 更新文章端点
@@ -81,12 +86,16 @@ def edit_blog(blog_id):
     blog = Blog.query.get_or_404(blog_id)
     if blog:
         if blog.author_id == g.current_user.id:
-            blog.body = request.json.get('body')
-            blog.draft = False
-            if request.json.get('draft') == 'true':
-                blog.draft = True
-            db.session.add(blog)
-            db.session.commit()
-            return jsonify(blog.to_json())
+            try:
+                blog.body = request.json.get('body')
+                blog.draft = False
+                if request.json.get('draft') == 'true':
+                    blog.draft = True
+                db.session.add(blog)
+                db.session.commit()
+                return jsonify(blog.to_json())
+            except ParsingError as e:
+                print(e)
+                return bad_request('There is something wrong in your format. Committing abolished.')
         return forbidden('Insufficient permissions')
     return bad_request('Blog not found')

@@ -26,7 +26,7 @@ def categories(username):
     host_user = User.query.filter_by(username=username).first()
     if host_user:
         return render_template('user/categories.html', categories=host_user.categories.all(), host_user=host_user)
-    return render_template('/errors/404.html'), 404
+    return redirect(url_for('user.index'))
 
 
 # 单个分类下的文章列表路由
@@ -57,7 +57,7 @@ def tags(username):
     host_user = User.query.filter_by(username=username).first()
     if host_user:
         return render_template('user/tags.html', tags=host_user.tags.all(), host_user=host_user)
-    return render_template('/errors/404.html'), 404
+    return redirect(url_for('user.index'))
 
 
 # 单个标签下的文章列表路由
@@ -98,7 +98,7 @@ def drafts(username):
         # 返回入口
         draft_enter = 'Home'
         return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user, draft_enter=draft_enter)
-    return render_template('/errors/404.html'), 404
+    return redirect(url_for('user.index'))
 
 
 # 用户文章路由
@@ -112,7 +112,7 @@ def blog_page(username, blog_id):
         # 如果当前用户已登录并且 id 和被访问用户相同（是本人）或者当前文章不是草稿：
         if (current_user.is_authenticated and host_user.id == current_user.id) or not blog.draft:
             return render_template('/user/blog_page.html', blog=blog, host_user=host_user)
-    return render_template('/errors/404.html'), 404
+    return redirect(url_for('user.index'))
 
 
 # 删除用户文章（需要登录才能访问）

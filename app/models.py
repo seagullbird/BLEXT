@@ -2,11 +2,12 @@ from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app, url_for, request, g
+from flask import current_app, url_for
 from datetime import datetime
 import mistune
 import bleach
-from .blog_parser import parse
+from .blog_parser import Blog_Parser
+from .exceptions import ParsingError
 
 
 # 用户模型
@@ -162,22 +163,27 @@ class Blog(db.Model):
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         markdown = mistune.Markdown()
+        blog_parser = Blog_Parser(value)
         # html中允许的html标签
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']
         # 利用parse函数从value（也就是被改变的body）值中解析出各项属性并赋值
-        title, category_name, tag_names, summary_text, content = parse(value)
-        target.title = title
-        target.summary_text = summary_text
-        target.summary = markdown(summary_text)
-        target.html = bleach.linkify(bleach.clean(
-            markdown(content),
-            tags=allowed_tags, strip=True))
-        target.change_category(Category.generate_category(
-            category_name, target.author_id))
-        target.change_tags(Tag.generate_tags([t.strip() for t in tag_names.strip(
-            '[').strip(']').split(',')], target.author_id))
+        try:
+            title, category_name, tag_names, summary_text, content = blog_parser.parse()
+            target.title = title
+            target.summary_text = summary_text
+            target.summary = markdown(summary_text)
+            target.html = bleach.linkify(bleach.clean(
+                markdown(content),
+                tags=allowed_tags, strip=True))
+            target.change_category(Category.generate_category(
+                category_name, target.author_id))
+            target.change_tags(Tag.generate_tags([t.strip() for t in tag_names.strip(
+                '[').strip(']').split(',')], target.author_id))
+
+        except ParsingError as e:
+            raise ParsingError(e)
 
     # 更新标签处理
     def change_tags(self, new_tags):

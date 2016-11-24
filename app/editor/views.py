@@ -2,7 +2,8 @@ from . import editor
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import current_user
 from .. import db
-from ..models import Blog, Category, Tag
+from ..models import Blog
+from ..exceptions import ParsingError
 
 # 对于“用户重新编辑已存在文章后发布不会覆盖原文章而是产生新的一篇文章”问题的解决办法：
 # 在编辑器页面中添加隐藏（hidden）标签 #blog_id，编辑器主页（下面的 index 函数）收到任何
@@ -17,6 +18,7 @@ def index():
     # 如果是 POST 请求，说明用户提交了一篇新文章
     # 接下来是通过 POST 的表单中的数据在数据库中创建新文章
     if request.method == 'POST':
+        success = False
         # 获得作者
         author = current_user._get_current_object()
         # 获得纯文本正文
@@ -29,21 +31,34 @@ def index():
         blog_id = request.form.get('blog_id')
         # 如果表单中的 blog_id 有值说明该文章是重新编辑文章，不需创建新的
         if blog_id:
-            old_blog = Blog.query.filter_by(id=int(blog_id)).first()
-            old_blog.draft = draft
-            old_blog.body = blog_text
-            db.session.add(old_blog)
+            try:
+                old_blog = Blog.query.filter_by(id=int(blog_id)).first()
+                old_blog.draft = draft
+                old_blog.body = blog_text
+                db.session.add(old_blog)
+                success = True
+            except ParsingError as e:
+                print(e)
         else:
             # 创建新文章并添加进数据库
-            new_blog = Blog(body=blog_text, author_id=author.id, draft=draft)
-            db.session.add(new_blog)
+            try:
+                new_blog = Blog(
+                    body=blog_text, author_id=author.id, draft=draft)
+                db.session.add(new_blog)
+                success = True
+            except ParsingError as e:
+                print(e)
 
-        if not draft:
-            flash('Your blog is successfully uploaded!')
+        if success:
+            if not draft:
+                flash('Your blog is successfully uploaded!')
+            else:
+                flash('Your blog is successfully saved as a draft.')
+            # 重定向到编辑页
+            return redirect(url_for('editor.index'))
         else:
-            flash('Your blog is successfully saved as a draft.')
-        # 重定向到编辑页
-        return redirect(url_for('editor.index'))
+            flash('There is something wrong in your format. Committing abolished.')
+            return render_template('editor/index.html', text=blog_text)
 
     # 如果 session 中有 blog_id 值说明是从 edit 路由重定向过来的
     if session.get('blog_id'):
@@ -54,7 +69,7 @@ def index():
         # 查找该博文如果存在：
         if blog:
             # 将已有内容渲染到页面上，并附上 blog_id 作为隐藏标签的值
-            return render_template('editor/index.html', title=blog.title, category_id=blog.category_id, tags=','.join([tag.name for tag in blog.tags]), summary_text=blog.summary_text, text=blog.body, blog_id=blog_id)
+            return render_template('editor/index.html', text=blog.body, blog_id=blog_id)
     return render_template('editor/index.html')
 
 
