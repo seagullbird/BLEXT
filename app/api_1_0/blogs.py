@@ -3,7 +3,7 @@ from ..models import Blog
 from . import api
 from .errors import bad_request, forbidden
 from .. import db
-from app.exceptions import ValidationError, ParsingError
+from app.exceptions import ParsingError
 
 
 # 当前用户的所有文章端点

@@ -70,7 +70,9 @@ def index():
         if blog:
             # 将已有内容渲染到页面上，并附上 blog_id 作为隐藏标签的值
             return render_template('editor/index.html', text=blog.body, blog_id=blog_id)
-    return render_template('editor/index.html')
+
+    placeholder = '---\ntitle: <title>\ncategory: <category>\ntags: []\n---\n<summary>\n<!-- more -->\n<Content>'
+    return render_template('editor/index.html', text=placeholder)
 
 
 # 用户文章重新编辑路由（博文页面上的 edit 按钮）
