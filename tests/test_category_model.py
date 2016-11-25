@@ -25,3 +25,16 @@ class CategoryModelTestCase(unittest.TestCase):
 		cat2 = Category.generate_category(cat_name2, u.id)
 		self.assertTrue(cat_name1 == cat1.name)
 		self.assertTrue(cat_name2 == cat2.name)
+
+	def test_to_json(self):
+		cat = Category(name='cat')
+		db.session.add(cat)
+		db.session.commit()
+		json_cat = cat.to_json()
+		self.assertTrue('cat' == json_cat['name'])
+
+	def test_repr(self):
+		cat = Category(name='cat')
+		db.session.add(cat)
+		db.session.commit()
+		self.assertTrue(repr(Category.query.first()) == "<Category 'cat'>")

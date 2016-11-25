@@ -2,7 +2,7 @@
 import unittest
 from app import create_app, db
 from app.models import User, Blog, Tag, Category
-
+from app.exceptions import ParsingError
 
 class BlogModelTestCase(unittest.TestCase):
 	def setUp(self):
@@ -35,41 +35,70 @@ class BlogModelTestCase(unittest.TestCase):
 		self.assertTrue(origin_tags != blog.tags)
 		self.assertTrue(origin_category_id != blog.category_id)
 
+	def test_body_parsing_error(self):
+		try:
+			blog = Blog(body='wrong format')
+			db.session.add(blog)
+			db.session.commit()
+			self.assertTrue(False)
+		except ParsingError as e:
+			self.assertTrue(e.args[0] == 'wrong when parsing input')
+		try:
+			blog = Blog(body='---wrong header---\n<summary>\n<!-- more -->\n<Content>')
+			db.session.add(blog)
+			db.session.commit()
+			self.assertTrue(False)
+		except ParsingError as e:
+			self.assertTrue(e.args[0] == 'wrong when parsing header')
+		try:
+			blog = Blog(body='---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag2, tag3]\n---\n<Content>')
+			db.session.add(blog)
+			db.session.commit()
+			self.assertTrue(True)
+		except Exception as e:
+			self.assertTrue(False)
+
 	def test_change_tags(self):
 		blog = Blog(body='---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag2, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
-		new_tags = [Tag(name=tagname) for tagname in ['tag2', 'tag3', 'tag4']]
+		blog2 = Blog(body='---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag5, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
+		new_tags = [Tag(name=tagname) for tagname in ['tag5', 'tag3', 'tag4']]
 		blog.change_tags(new_tags)
 		self.assertTrue(blog.tags == new_tags)
 
 	def test_change_category(self):
 		blog = Blog(body='---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag2, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
-		new_cat = Category(name='new_cat')
-		blog.change_category(new_cat)
-		db.session.add(new_cat)
 		db.session.add(blog)
 		db.session.commit()
-		self.assertTrue(blog.category_id == new_cat.id)
+		cat = blog.category
+		blog.change_category(cat)
+		self.assertTrue(blog.category_id == cat.id)
 		self.assertFalse(blog.category.name == '<summary>')
-
-	def test_delete_tags(self):
-		blog = Blog(body='---\ntitle: <title>\ncategory: <new_cat>\ntags: [nt1, nt2, nt3]\n---\n<summary>\n<!-- more -->\n<Content>')
-		db.session.add(blog)
+		blog2 = Blog(body='---\ntitle: <title>\ncategory: <category2>\ntags: [tag1, tag2, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
+		db.session.add(blog2)
 		db.session.commit()
+		cat2 = blog2.category
+		blog.change_category(cat2)
+		db.session.commit()
+		self.assertTrue(Category.query.count() == 1)
+		self.assertTrue(Category.query.first().name == '<category2>')
+		cat = Category(name='new_cat')
+		blog.change_category(cat)
+		db.session.commit()
+		self.assertTrue(Category.query.count() == 2)
+
+	def test_delete_tags_and_category(self):
+		blog = Blog(body='---\ntitle: <title>\ncategory: <new_cat>\ntags: [tag1, tag2, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
+		blog2 = Blog(body='---\ntitle: <title>\ncategory: <category2>\ntags: [tag1, tag4, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
+		blog3 = Blog(body='---\ntitle: <title>\ncategory: <category2>\ntags: [tag1, tag4, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
 		blog.delete_tags()
-		db.session.delete(blog)
-		db.session.commit()
-		self.assertFalse(Blog.query.all())
-		self.assertFalse(Tag.query.all())
-
-	def test_delete_category(self):
-		blog = Blog(body='---\ntitle: <title>\ncategory: <new_cat>\ntags: [nt1, nt2, nt3]\n---\n<summary>\n<!-- more -->\n<Content>')
-		db.session.add(blog)
-		db.session.commit()
 		blog.delete_category()
 		db.session.delete(blog)
 		db.session.commit()
-		self.assertFalse(Blog.query.all())
-		self.assertFalse(Category.query.all())
+		self.assertTrue(Tag.query.count() == 3)
+		self.assertTrue(Category.query.count() == 1)
+		blog2.delete_category()
+		db.session.commit()
+		self.assertTrue(Category.query.count() == 1)
 
 	def test_to_json(self):
 		blog = Blog(body='---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag2, tag3]\n---\n<summary>\n<!-- more -->\n<Content>')
@@ -82,3 +111,9 @@ class BlogModelTestCase(unittest.TestCase):
 		expected_keys = ['url', 'id', 'title', 'summary_text', 'body', 'timestamp', 'draft', 'author', 'category', 'tags']
 		self.assertEqual(sorted(json_blog.keys()), sorted(expected_keys))
 		self.assertTrue('api/v1.0/blogs/' in json_blog['url'])
+
+	def test_repr(self):
+		blog = Blog(title='title')
+		db.session.add(blog)
+		db.session.commit()
+		self.assertTrue(repr(Blog.query.first()) == "<Blog 'title'>")

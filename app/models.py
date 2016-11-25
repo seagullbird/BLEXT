@@ -94,7 +94,7 @@ class User(db.Model, UserMixin):
         return True
 
     # 生成 api 确认令牌
-    def generate_auth_token(self, expiration):
+    def generate_auth_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'],
                        expires_in=expiration)
         return s.dumps({'id': self.id}).decode('ascii')
@@ -225,11 +225,10 @@ class Blog(db.Model):
     # 删除分类处理（删除文章时）
     def delete_category(self):
         cur_category = self.category
-        if cur_category:
-            # 如果该分类下删除这篇博文后没有其他博文了则删除该分类
-            cur_category.blogs.remove(self)
-            if not cur_category.blogs.all():
-                db.session.delete(cur_category)
+        # 如果该分类下删除这篇博文后没有其他博文了则删除该分类
+        cur_category.blogs.remove(self)
+        if not cur_category.blogs.all():
+            db.session.delete(cur_category)
 
     # 将博客文章资源转化为JSON格式的序列化字典（用于api）
     def to_json(self):

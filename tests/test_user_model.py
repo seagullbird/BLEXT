@@ -84,8 +84,18 @@ class UserModelTestCase(unittest.TestCase):
 		db.session.add(u2)
 		db.session.commit()
 		token = u1.generate_reset_token()
+		self.assertFalse(u2.reset_password('', 'horse'))
 		self.assertFalse(u2.reset_password(token, 'horse'))
 		self.assertTrue(u2.verify_password('dog'))
+
+	# 测试api令牌
+	def test_valid_api_token(self):
+		u = User(password='cat')
+		db.session.add(u)
+		db.session.commit()
+		token = u.generate_auth_token()
+		self.assertFalse(u.verify_auth_token(''))
+		self.assertTrue(u.verify_auth_token(token))
 
 	# 测试 to_json
 	def test_to_json(self):
@@ -96,3 +106,9 @@ class UserModelTestCase(unittest.TestCase):
 		expected_keys = ['url', 'username', 'blogs', 'categories', 'tags', 'avatar_url', 'blog_count']
 		self.assertEqual(sorted(json_user.keys()), sorted(expected_keys))
 		self.assertTrue('api/v1.0/user/' in json_user['url'])
+
+	def test_repr(self):
+		u = User(email='mike@example.com', username='mike', password='cat')
+		db.session.add(u)
+		db.session.commit()
+		self.assertTrue(repr(User.query.first()) == "<User 'mike'>")

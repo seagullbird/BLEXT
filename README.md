@@ -41,4 +41,5 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev10.0: Refactored `blog_parser.py`, and added `ParsingError` exception.
 - dev10.0.1: Slight changes.
 - dev10.1: Added tests of `models.py` and added code coverage detect.
+- dev10.2: Added tests with Flask test client, not finished yet.
 
