@@ -3,3 +3,7 @@ venv/
 
 # .DS_Store
 .DS_Store
+
+# coverage data and pic
+.coverage
+coverage.svg

@@ -1,5 +1,7 @@
 # BLEXT —— One stop blog supplier
 
+![](./coverage.svg)
+
 BLEXT is a blog website where you can finish the whole "edit - store - publish" blogging process in one place, providing ultimate personal blog experience.
 
 ## How to contribute (Mac)
