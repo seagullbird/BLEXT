@@ -24,7 +24,9 @@ $ git remote add upstream https://github.com/seagullbird/BLEXT.git
 $ pyvenv venv
 ```
 
-This should add a `venv/` folder under your repo root.  And:
+This should add a `venv/` folder under your repo root.  (**Notice: You can only name your virtual environment folder with 'venv' since this is declated in .gitignore.**)
+
+And:
 
 ```
 $ source venv/bin/activate
@@ -78,6 +80,8 @@ On registration in this application, the server would send an email to the email
 You can change any thing you want and if you think you've made some great contributions to this project, please do create a new pull request. Many thanks.
 
 **Also remember to `git pull upstream master`** each next time before opening this project to keep synchronic with me.
+
+To submit changes, first run `git push origin master` (after `git add .` and `git commit -m '<description>'`) to push your local repo to your own (forked from this) remote repo, then **create a new pull request** in your own github repo and wait for me to merge!
 
 ## Versions
 

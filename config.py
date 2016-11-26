@@ -20,6 +20,11 @@ class Config:
     # API每次get_blogs请求返回的每页文章数
     API_BLOGS_PER_PAGE = 5
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    # 数据库缓慢查询阈值
+    FLASKY_SLOW_DB_QUERY_TIME = 0.5
+    # 告诉Flask-SQLAlchemy启用记录查询统计数字的功能
+    SQLALCHEMY_RECORD_QUERIES = True
+
 
 
 # 开发环境配置类

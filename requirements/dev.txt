@@ -1,3 +1,2 @@
 -r common.txt
 coverage==4.2
-selenium-3.0.1

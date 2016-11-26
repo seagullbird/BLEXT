@@ -60,5 +60,25 @@ def test(coverage=False):
         COV.erase()
 
 
+# 在请求分析器的监视下运行程序
+@manager.command
+def profile(length=25, profile_dir=None):
+    """Start the application under the code profiler."""
+    from werkzeug.contrib.profiler import ProfilerMiddleware
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[length],
+                                      profile_dir=profile_dir)
+    app.run()
+
+
+# 程序部署命令
+@manager.command
+def deploy():
+    """Run deployment tasks."""
+    from flask.ext.migrate import upgrade
+
+    # migrate database to latest revision
+    upgrade()
+
+
 if __name__ == '__main__':
     manager.run()
