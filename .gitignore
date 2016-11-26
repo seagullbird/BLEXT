@@ -7,3 +7,6 @@ venv/
 # coverage data
 .coverage
 coverage.svg
+
+# coverage report
+tmp/
