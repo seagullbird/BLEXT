@@ -42,7 +42,7 @@ Will activate the virtual environment while you see a `(venv)` before `$` in you
 
 *This step is recommended but you don't necessarily have to do this if you're just taking a quick glance.*
 
-On registration in this application, the server would send an email to the email address you're signing up with. This step is the premise that the server send the email successfully. The server will get sender's email address and password from local environment variables, so let's set it up first.
+On registration in this application, the server would send an email to the email address you're signing up with. This step is the prerequisite that the server send the email successfully. The server will get sender's email address and password from local environment variables, so let's set it up first.
 
 ```
 (venv) $ export MAIL_USERNAME=mike@email.com
