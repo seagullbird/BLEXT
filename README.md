@@ -1,6 +1,6 @@
 # BLEXT —— One stop blog supplier
 
-![](http://ogzip16ak.bkt.clouddn.com/coverage.svg?attname=&e=1480152436&token=gSa-QBUs6CW6mqiHfbsm1BW6mOb-fdzj64j_qSMe:pSKQA1IqtPLQPMfvoIkuFwz5Oi8)
+![](http://ogzip16ak.bkt.clouddn.com/coverage.svg?attname=&e=1480166840&token=gSa-QBUs6CW6mqiHfbsm1BW6mOb-fdzj64j_qSMe:xyzV3dYBY3ZdJjTu2Q_8DR9VOmM)
 
 BLEXT is a blog website where you can finish the whole "edit - store - publish" blogging process in one place, providing ultimate personal blog experience.
 
@@ -120,6 +120,7 @@ You can change any thing you want and if you think you've made some great contri
 - dev10.1: Added tests of `models.py` and added code coverage detect.
 - dev10.2: Added tests with Flask test client, not finished yet.
 - dev10.3: Still in testing process. Code coverage now 74%. Also, **Added .gitignore file.** Virtual environment will not be submitted anymore.
+- dev10.4: Coverage reached 95%.
 
 
 ## LICENSE

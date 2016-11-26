@@ -43,4 +43,4 @@ def profile_setting():
             current_user.about_me = markdown(form.about_me.data)
         db.session.add(current_user)
         return redirect(url_for('user.index', username=current_user.username))
-    return render_template('settings/index.html', title='Public Profile', form=form)
+    return render_template('settings/index.html', title='Public Profile', form=form, about_me=current_user.about_me_text)

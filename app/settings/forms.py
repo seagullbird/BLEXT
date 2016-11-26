@@ -24,4 +24,5 @@ class ProfileSettingForm(FlaskForm):
     blog_title = StringField('Blog Title', validators=[Length(0, 32)])
     # 用户 about me 字段
     about_me = TextAreaField('About me (In markdown)')
+
     submit = SubmitField('Update Profile')

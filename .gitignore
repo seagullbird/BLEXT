@@ -4,9 +4,5 @@ venv/
 # .DS_Store
 .DS_Store
 
-# coverage data
-.coverage
-coverage.svg
-
 # coverage report
 tmp/

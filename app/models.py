@@ -28,7 +28,9 @@ class User(db.Model, UserMixin):
     confirmed = db.Column(db.Boolean, default=False)
     # 用户个性签名
     bio = db.Column(db.String(64))
-    # 用户about_me
+    # 用户about_me纯文本
+    about_me_text = db.Column(db.Text)
+    # 用户about_me富文本
     about_me = db.Column(db.Text)
     # 用户头像图片地址
     avatar_url = db.Column(db.String(256))

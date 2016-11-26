@@ -1,6 +1,5 @@
 import unittest
 import json
-import re
 from base64 import b64encode
 from flask import url_for
 from app import create_app, db
@@ -8,6 +7,7 @@ from app.models import User, Blog
 
 
 class APITestCase(unittest.TestCase):
+
     def setUp(self):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
@@ -178,6 +178,16 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(json_response['url'] == url)
         self.assertTrue(json_response[
                         'body'] == '---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag2, tag3]\n---\n<summary>\n<!-- more -->\n**Updated markdown** Content.')
+
+        # edit wrong format draft
+        response = self.client.put(
+            url,
+            headers=self.get_api_headers('mike@example.com', 'cat'),
+            data=json.dumps({'body': 'wrong format', 'draft': 'true'}))
+        self.assertTrue(response.status_code == 400)
+        json_response = json.loads(response.data.decode('utf-8'))
+        self.assertTrue(json_response[
+                        'message'] == 'There is something wrong in your format. Committing abolished.')
 
     def test_user(self):
         # add a user
