@@ -125,6 +125,7 @@ To submit changes, first run `git push origin master` (after `git add .` and `gi
 - dev10.2: Added tests with Flask test client, not finished yet.
 - dev10.3: Still in testing process. Code coverage now 74%. Also, **Added .gitignore file.** Virtual environment will not be submitted anymore.
 - dev10.4: Coverage reached 95%.
+- dev11.0: First attempt to deploy.
 
 
 ## LICENSE

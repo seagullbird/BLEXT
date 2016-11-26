@@ -6,3 +6,6 @@ venv/
 
 # coverage report
 tmp/
+
+# environment variable
+.env
