@@ -1,6 +1,6 @@
 # BLEXT —— One stop blog supplier
 
-![](./tmp/coverage/coverage.svg)
+![](http://ogzip16ak.bkt.clouddn.com/coverage.svg?attname=&e=1480152436&token=gSa-QBUs6CW6mqiHfbsm1BW6mOb-fdzj64j_qSMe:pSKQA1IqtPLQPMfvoIkuFwz5Oi8)
 
 BLEXT is a blog website where you can finish the whole "edit - store - publish" blogging process in one place, providing ultimate personal blog experience.
 
