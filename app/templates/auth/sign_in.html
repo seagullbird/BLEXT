@@ -12,30 +12,6 @@
 		<div class="col-md-3 column content" style="margin-top: 25px;
 	margin-left: 4%;">
 			{{ wtf.quick_form(form) }}
-			<!-- <form class="form-horizontal sign_in_form" role="form">
-				<div class="form-group required">
-					<div class="col-sm-12">
-						<input placeholder="Email" class="form-control" id="email" name='email' required type="email" value/>
-					</div>
-				</div>
-				<div class="form-group required">
-					<div class="col-sm-12">
-						<input required type="password" class="form-control" id="password" name="password" placeholder="Password" value/>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-12">
-						<div class="checkbox">
-							 <label><input id="remember_me" name="remember_me" type="checkbox" value="y"/>Remember me</label>
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-12">
-						 {{ wtf.form_field(form.submit) }}
-					</div>
-				</div>
-			</form> -->
 			<p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
 		</div>
 	</div>

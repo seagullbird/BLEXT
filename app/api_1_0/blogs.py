@@ -75,8 +75,7 @@ def new_blog():
         return jsonify(blog.to_json()), 201, \
             {'Location': url_for(
                 'api.get_blog', blog_id=blog.id, _external=True)}
-    except ParsingError as e:
-        print(e)
+    except ParsingError:
         return bad_request('There is something wrong in your format. Committing abolished.')
 
 

@@ -42,4 +42,5 @@ BLEXT is a blog website where you can finish the whole "edit - store - publish" 
 - dev10.0.1: Slight changes.
 - dev10.1: Added tests of `models.py` and added code coverage detect.
 - dev10.2: Added tests with Flask test client, not finished yet.
+- dev10.3: Still in testing process. Code coverage now 74%. Also, **Added .gitignore file.** Virtual environment will not be submitted anymore.
 
