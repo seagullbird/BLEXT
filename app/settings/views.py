@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from . import settings
 from flask import render_template, flash, redirect, url_for
 from .forms import ChangePasswordForm, ProfileSettingForm

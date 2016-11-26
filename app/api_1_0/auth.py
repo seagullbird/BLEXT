@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # 使用 flask 扩展 flask_httpauth 实现的 REST web 服务用户验证
 from flask_httpauth import HTTPBasicAuth
 from flask import g, jsonify

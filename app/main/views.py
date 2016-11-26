@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from . import main
 from flask import render_template, current_app
 from flask_sqlalchemy import get_debug_queries

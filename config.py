@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 # 获取项目根路径
 basedir = os.path.abspath(os.path.dirname(__file__))

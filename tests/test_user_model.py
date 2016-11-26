@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Test of User Model
 import unittest
 import time

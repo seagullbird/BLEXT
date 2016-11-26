@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Test of Blog Model
 import unittest
 from app import create_app, db

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Test of Tag Model
 import unittest
 from app import create_app, db

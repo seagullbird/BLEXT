@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 from app.models import User, Blog, Category
 import time
