@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import os
 COV = None
 # 如果环境变量中有FLASK_COVERAGE，启动代码覆盖检测
