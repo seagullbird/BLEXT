@@ -11,45 +11,43 @@
 {% endblock %}
 
 {% block navbar %}
-<div class="container col-md-12">
-    <div class="row clearfix">
-        <div class="column">
-            <nav class="navbar navbar-default" role="navigation">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">BLEXT</a>
-                </div>
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                             <a href="#">Document</a>
-                        </li>
-                        {% if not current_user.is_authenticated %}
-                        <li>
-                             <a href="{{ url_for('auth.sign_in')}}">Sign in</a>
-                        </li>
-                        <li>
-                             <a href="{{ url_for('auth.sign_up')}}">Sign up</a>
-                        </li>
-                        {% else %}
-                        <li>
-                             <a href="{{ url_for('user.index',username=current_user.username) }}">
-                                {% if current_user.blog_title %}
-                                {{ current_user.blog_title }}
-                                {% else %}
-                                {{current_user.username}}'s BLOG
-                                {% endif %}
-                             </a>
-                        </li>
-                        <li>
-                             <a href="{{ url_for('auth.sign_out') }}">Sign Out</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </nav>
-        </div>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <!-- humburger menu -->
+            <span class="icon-bar" style="background-color: #fff"></span>
+            <span class="icon-bar" style="background-color: #fff"></span>
+            <span class="icon-bar" style="background-color: #fff"></span>
+        </button>
+        <a class="navbar-brand" href="/">BLEXT</a>
     </div>
-</div>
+
+    <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                 <a href="#">Document</a>
+            </li>
+            {% if not current_user.is_authenticated %}
+            <li>
+                  <a href="{{ url_for('auth.sign_in')}}">Sign in</a>
+            </li>
+             {% else %}
+             <li>
+                  <a href="{{ url_for('user.index',username=current_user.username) }}">
+                     {% if current_user.blog_title %}
+                     {{ current_user.blog_title }}
+                     {% else %}
+                     {{current_user.username}}'s BLOG
+                     {% endif %}
+                  </a>
+             </li>
+            <li>
+                 <a href="{{ url_for('auth.sign_out') }}">Sign Out</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
 {% endblock %}
 
 {% block content %}
@@ -61,4 +59,15 @@
     </div>
     {% endfor %}
   {% block page_content %}{% endblock %}
+<!--     <div style="margin-top:100px; margin-bottom: 0; padding-bottom: 0;background-color: #C2E5F3">
+            <div class="row clearfix">
+                <div class="col-xs-offset-1 col-xs-10 col-sm-6 col-md-6 col-lg-2">
+                    <a href="#"><span class="glyphicon glyphicon-envelope">Contact me</span></a>
+                </div>
+                <div class="col-xs-offset-1 col-xs-10 col-sm-6 col-md-6 col-lg-2">
+                    <a href="#"><span class="glyphicon glyphicon-envelope">Contact me</span></a>
+                </div>
+            </div>
+    </div> -->
+</div>
 {% endblock %} 

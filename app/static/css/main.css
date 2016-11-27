@@ -1,6 +1,7 @@
 /*背景颜色*/
 body {
 	background: #F2F2F2;
+	background-image: url(../img/bg.jpg);
 }
 
 /*导航栏背景颜色*/
