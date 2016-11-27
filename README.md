@@ -126,7 +126,7 @@ To submit changes, first run `git push origin master` (after `git add .` and `gi
 - dev10.3: Still in testing process. Code coverage now 74%. Also, **Added .gitignore file.** Virtual environment will not be submitted anymore.
 - dev10.4: Coverage reached 95%.
 - dev11.0: First attempt to deploy.
-- dev12.0: Completed deployment. updated `config.py` and finished a [tutorial]() on deployment.
+- dev12.0: Completed deployment. updated `config.py` and finished a [tutorial](http://seagullbird.github.io/post/How%20to%20deploy%20a%20Flask%20app%20to%20Heroku/) on deployment.
 
 
 ## LICENSE
