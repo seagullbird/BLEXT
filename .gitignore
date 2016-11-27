@@ -9,3 +9,7 @@ tmp/
 
 # environment variable
 .env
+
+# pycache
+__pycache__/
+*.pyc
