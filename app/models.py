@@ -193,8 +193,6 @@ class Blog(db.Model):
         old_tags = self.tags
         # 求差集，new_tags 中没有而 old_tags 中有的为已删除标签
         deleted_tags = list(set(old_tags).difference(set(new_tags)))
-        # 删除原有的所有标签
-        self.tags.clear()
         # 更新新的标签
         self.tags = new_tags
         # 对于已删除的标签，如果其下没有任何文章则删除该标签

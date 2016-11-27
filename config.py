@@ -11,9 +11,9 @@ class Config:
     # 每次请求结束后都会自动提交数据库中的变动
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     # 邮件主题的前缀
-    BLEXT_MAIL_SUBJECT_PREFIX = '[Blext]'
+    BLEXT_MAIL_SUBJECT_PREFIX = '[BlEXT]'
     # 发件人的地址
-    BLEXT_MAIL_SENDER = 'Blext admin <380554381@qq.com>'
+    BLEXT_MAIL_SENDER = 'Blext admin <BLEXT@qq.com>'
     # 电子邮件收件人
     BLEXT_ADMIN = os.environ.get('BLEXT_ADMIN')
     # 用户博客主页每页显示文章数
