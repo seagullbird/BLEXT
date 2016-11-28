@@ -1,7 +1,14 @@
+body html{
+	height: 100%;
+}
+
 /*背景颜色*/
 body {
-	background: #F2F2F2;
+	background: #000000;
 	background-image: url(../img/bg.jpg);
+	background-repeat:no-repeat;
+	background-size: cover;
+	background-position: center;
 }
 
 /*导航栏背景颜色*/
