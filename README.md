@@ -2,6 +2,8 @@
 
 ![](http://ogzip16ak.bkt.clouddn.com/coverage.svg?attname=&e=1480166840&token=gSa-QBUs6CW6mqiHfbsm1BW6mOb-fdzj64j_qSMe:xyzV3dYBY3ZdJjTu2Q_8DR9VOmM)
 
+[![Documentation Status](https://readthedocs.org/projects/blext/badge/?version=latest)](http://blext.readthedocs.io/en/latest/?badge=latest)
+
 BLEXT is a blog website where you can finish the whole "edit - store - publish" blogging process in one place, providing ultimate personal blog experience.
 
 ## How to contribute (Mac)
