@@ -42,3 +42,4 @@
 - dev12.0: Completed deployment. updated `config.py` and finished a [tutorial](http://seagullbird.github.io/post/How%20to%20deploy%20a%20Flask%20app%20to%20Heroku/) on deployment.
 - dev13.0: [Leslie](https://github.com/BeihaiNorth) has started helping me with my nasty front pages. This is her first commit.
 - dev14.0: Added sphinx. Gonna write the docs tomorrow.
+- dev15.0: Finished API and Blog format documentation.

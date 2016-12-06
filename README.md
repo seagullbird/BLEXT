@@ -5,6 +5,10 @@
 
 BLEXT is a blog website where you can finish the whole "edit - store - publish" blogging process in one place, providing ultimate personal blog experience.
 
+## Documentation
+
+See the latest [documentation](http://blext.readthedocs.io/en/latest/).
+
 ## How to contribute (Mac)
 
 ### First of all
