@@ -140,5 +140,5 @@ def delete_blog(blog_id):
 def about_me(username):
     host_user = User.query.filter_by(username=username).first()
     if host_user:
-        return render_template('user/about_me.html', about_me=host_user.about_me)
+        return render_template('user/about_me.html', about_me=host_user.about_me, host_user=host_user)
     abort(404)

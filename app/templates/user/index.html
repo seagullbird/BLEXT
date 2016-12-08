@@ -1,38 +1,44 @@
 {% extends "user/base.html" %}
 {% import "user/_macros.html" as macros %}
-{% block right_panel %}
-	{% if blogs %}
-		{% for blog in blogs %}
-		<div class="Articles">
-			<div class="blog-header">
-				<h2>{{ blog.title }}</h2>
-				{% if not blog.draft %}
-				<p>
-					Posted on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
-				</p>
-				{% else %}
-				<p>
-					Saved draft on {{ (blog.timestamp.date()) }} | In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
-				</p>
-				{% endif %}
-				<br>
-			</div>
-		<div>
-			{{ blog.summary | safe }}
-		</div>
+{% block title %}{{ current_user.username }}'s blog{% endblock %}
+{% block page_content %}
+<!-- Content -->
+<div id="content">
+    <div class="inner">
+        <!-- Post -->
+        {% if blogs %}
+			{% for blog in blogs %}
+			<article class="box post post-excerpt">
+	            <header>
+	                <h2><a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}">{{ blog.title }}</a></h2>
+	                <p>
+						In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
+	                </p>
+	            </header>
+	            <div class="info">
+	                <span class="date">
+	                	<span class="month">{{blog.timestamp.ctime().split(' ')[1]}}</span> 
+	                	<span class="day">{{blog.timestamp.ctime().replace('  ', ' ').split(' ')[2]}}</span>
+	                </span>
+	            </div>
+	            <p>
+	                {{ blog.summary | safe }}
+	            </p>
+	            <a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}">
+	            	<button>Read more >></button>
+	            </a>
+	        </article>
+	        {% endfor %}
+	        {% if blogs and pagination %}
+	        <!-- Pagination -->
+	        <div class="pagination">
+	        	{{ macros.pagination_widget(pagination, '.index', host_user) }}
+	        </div>
 
-		<p style="text-align: center;">
-			<a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}"><button class="btn btn-default" style="border: 2px solid black">Read More >></button></a>
-		</p>
-		<br>
-		</div>
-		{% endfor %}
-		{% if blogs and pagination %}
-			<div class="pagination" style="float: right">
-		    {{ macros.pagination_widget(pagination, '.index', host_user) }}
-			</div>
-		{% endif %}
-	{% else %}
-		<p>There's nothing here.</p>
-	{% endif %}
+	        {% endif %}
+	    {% else %}
+	    <p>There's nothing here.</p>
+	    {% endif %}
+    </div>
+</div>
 {% endblock %}

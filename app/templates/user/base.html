@@ -1,113 +1,79 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}BLEXT{% endblock %}
-
+{% block title %}{% endblock %}
 {% block head %}
 {{ super() }}
-<!-- <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">-->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
-{% endblock %}
-
-
-
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/striped/ie/html5shiv.js') }}"></script><![endif]-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/striped/main.css') }}" />
+<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/striped/ie8.css') }}" /><![endif]-->
+{% endblock %} 
 {% block content %}
+{{ super() }}
 <div class="container">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         {{ message }}
     </div>
-    {% endfor %}
-{% block page_content %}
-<div class="container" style="margin-top: 20px;">
-	<div class="row clearfix">
-		<div class="col-md-3 column">
-			<div class="row clearfix">
-				<div class="col-md-12 column Pannel1">
-					<div class="page-header Header">
-						<h1>
-							{% if host_user.blog_title %}
-							{{host_user.blog_title}}
-							{% else %}
-							{{host_user.username}}'s BLOG
-							{% endif %}
-						</h1>
-					</div>
-					<div class="panel panel-default Options">
-						<a href="{{ url_for('user.index', username=host_user.username) }}">
-							<div class="panel-body">
-							Home
-							</div>
-						</a>
-						{% if host_user == current_user %}
-						<a href="{{ url_for('editor.index') }}">
-							<div class="panel-heading">
-								Add a new Blog
-							</div>
-						</a>
-						<a href="{{ url_for('settings.profile_setting') }}">
-							<div class="panel-body">
-							Settings
-							</div>
-						</a>
-						{% endif %}
-						<a href="{{ url_for('user.about_me', username=host_user.username) }}">
-							<div class="panel-body">
-							About
-							</div>
-						</a>
-						<a href="{{ url_for('main.index') }}">
-							<div class="panel-footer">
-							Back to BLEXT
-							</div>
-						</a>
-					</div>
-				</div>
-			</div>
-			<div class="row clearfix">
-				<div class="col-md-12 column Pannel2">
-					<div class="col-md-12">
-						<div class="Avatar col-md-8 col-md-offset-2">
-							{% if host_user.avatar_url %}
-							<img width="100%" height="100%" src="{{host_user.avatar_url}}" />
-							{% else %}
-							<img width="100%" height="100%" src="http://ogzip16ak.bkt.clouddn.com/favicon.ico?attname=&e=1479990311&token=gSa-QBUs6CW6mqiHfbsm1BW6mOb-fdzj64j_qSMe:gJdyyV-ymhMTXx7-g11YtDmrXPw" />
-							{% endif %}
-						</div>
-					</div>
-					<div class="Bio">
-						{% if host_user.bio %}
-						<p>{{ host_user.bio }}</p>
-						{% else %}
-						<a href="{{ url_for('settings.profile_setting') }}">
-							Add a Bio
-						</a>
-						{% endif %}
-					</div>
-					<hr>
-					<div class="row">
-						<a href="{{ url_for('user.categories', username=host_user.username) }}">
-							<div class="col-md-4 sub-pannel"><b>Cats</b></div>
-						</a>
-						<a href="{{ url_for('user.tags', username=host_user.username) }}">
-							<div class="col-md-4 sub-pannel"><b>Tags</b></div>
-						</a>
-						{% if host_user == current_user %}
-						<a href="{{ url_for('user.drafts', username=host_user.username) }}">
-							<div class="col-md-4 sub-pannel"><b>Drafts</b></div>
-						</a>
-						{% endif %}
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-8 column Article_list">
-			{% block right_panel %}{% endblock %}
-		</div>
-	</div>
+    {% endfor %} 
+    {% block page_content %}{% endblock %}
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <!-- Logo -->
+        <h1 id="logo">
+        	<a href="#">
+				{% if host_user.blog_title %}
+				{{host_user.blog_title}}
+				{% else %}
+				{{host_user.username}}
+				{% endif %}
+        	</a>
+        </h1>
+        <!-- Nav -->
+        <nav id="nav">
+            <ul>
+                <li><a href="{{ url_for('user.index', username=host_user.username) }}">Home</a></li>
+                <li><a href="{{ url_for('editor.index') }}">Add a New Blog</a></li>
+                <li><a href="{{ url_for('user.about_me', username=host_user.username) }}">About Me</a></li>
+                <li><a href="{{ url_for('settings.profile_setting') }}">Settings</a></li>
+                <li><a href="{{ url_for('main.index') }}">Back to BLEXT</a></li>
+            </ul>
+        </nav>
+        <!-- Text -->
+        <section class="box text-style1">
+            <div class="inner">
+                {% if host_user.bio %}
+				<p>{{ host_user.bio }}</p>
+				{% else %}
+				<a href="{{ url_for('settings.profile_setting') }}">
+					Add a Bio
+				</a>
+				{% endif %}
+            </div>
+        </section>
+		<!-- Archives -->
+		<section class="box recent-posts">
+		    <header>
+		        <h2>Archives</h2>
+		    </header>
+		    <ul>
+		        <li class="current"><a href="{{ url_for('user.categories', username=host_user.username) }}">Categories</a></li>
+		        <li><a href="{{ url_for('user.tags', username=host_user.username) }}">Tags</a></li>
+		        {% if host_user == current_user %}
+		        <li><a href="{{ url_for('user.drafts', username=host_user.username) }}">Drafts</a></li>
+		        {% endif %}
+		    </ul>
+		</section>
 </div>
-</div>
-{% endblock %} 
-{% endblock %} 
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/striped/skel.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/striped/util.js') }}"></script>
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/striped/respond.min.js') }}"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/striped/main.js') }}"></script>
+<script src="https://use.fontawesome.com/ab291d07ba.js"></script>
+{% endblock %}

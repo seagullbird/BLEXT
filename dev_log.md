@@ -43,3 +43,4 @@
 - dev13.0: [Leslie](https://github.com/BeihaiNorth) has started helping me with my nasty front pages. This is her first commit.
 - dev14.0: Added sphinx. Gonna write the docs tomorrow.
 - dev15.0: Finished API and Blog format documentation.
+- dev16.0: Changed user blog page styple. Remaining: settings, blog_page, about_me, index (including sign in and sign up).

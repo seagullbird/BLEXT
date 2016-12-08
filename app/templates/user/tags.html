@@ -1,13 +1,22 @@
 {% extends "user/base.html" %}
-{% import "user/_macros.html" as macros %}
-{% block right_panel %}
-	{% if tags %}
-		{% for tag in tags %}
-			<a href="{{ url_for('user.tag', username=host_user.username, tag_name=tag.name) }}">
-				<p>{{ tag.name }}</p>
-			</a>
-		{% endfor %}
-	{% else %}
-		<p>There's nothing here.</p>
-	{% endif %}
+
+{% block page_content %}
+	<div id="content">
+		<div class="inner">
+		{% if tags %}
+				<article class="box post post-excerpt">
+				<header>
+					<h2>Tags</h2>
+				</header>
+				{% for tag in tags %}
+					<a href="{{ url_for('user.tag', username=host_user.username, tag_name=tag.name) }}">
+					<p>{{ tag.name }}</p>
+					</a>
+				{% endfor %}
+				</article>
+		{% else %}
+			<p>There's nothing here.</p>
+		{% endif %}
+		</div>
+	</div>
 {% endblock %}
