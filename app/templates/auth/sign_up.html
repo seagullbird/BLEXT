@@ -1,13 +1,34 @@
 {% extends "base.html" %}
 
+{% block title %}BLEXT - Sign up{% endblock %}
+
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">Sign up</h1>
+    </header>
+</div>
+
+{% endblock %}
+
 {% block page_content %}
-	<div class="container">
-		<div class="area col-md-8 col-md-offset- ">
-			<div class="row clearfix content">
-				<div class="col-md-4 column col-md-offset-4">
-					{{ wtf.quick_form(form) }}
-				</div>
-			</div>
-		</div>
-	</div>
+<!-- Main -->
+<div class="wrapper style1">
+    <div class="container">
+        <article id="main" class="special">
+            <section>
+				{{ wtf.quick_form(form) }}
+            </section>
+        </article>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$('body').addClass('no-sidebar');
+</script>
 {% endblock %}

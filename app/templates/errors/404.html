@@ -2,8 +2,38 @@
 
 {% block title %}BLEXT - Page Not Found{% endblock %}
 
-{% block page_content %}
-<div class="page-header">
-  <h1>Not Found</h1>
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">Page Not Found</h1>
+    </header>
 </div>
-{% endblock %} 
+
+{% endblock %}
+
+{% block page_content %}
+<!-- Main -->
+<div class="wrapper style1">
+    <div class="container">
+        <article id="main" class="special">
+            <section>
+                <h1>
+		        Soory!
+		    	</h1>
+                <p>
+                    This page does not exist.
+                </p>
+            </section>
+        </article>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$('body').addClass('no-sidebar');
+</script>
+{% endblock %}

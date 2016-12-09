@@ -1,19 +1,24 @@
 {% extends "base.html" %}
+{% block title %}BLEXT - Index{% endblock %}
 
-{% block page_content %}
-<div class="container">
-	<div style="margin-top: 200px; color: #8FC8DE">
-		<p class="text-center" style="font-size: 50px; margin-bottom: 0px; padding-bottom: 0px">Welcome to</p>
-		<p class="text-center" style="font-size: 70px; margin-top: 0px; padding-top: 0px; color: #FFC3B5"><strong>BLEXT</strong></p>
-		<p class="text-center" style="font-size: 20px"><em>Professional blogging process in one place</em></p>
-	</div>
-	<div class=row>
-		<div class="col-xs-offset-2 col-xs-8 col-sm-offset-4 col-sm-4 col-md-offset-4 col-md-4 col-lg-offset-5 col-lg-2">
-			<a href="{{ url_for('auth.sign_up')}}">
-				<button type="button" class="btn btn-default btn-lg" style="margin-top:20px; background-color: #8FC8DE; color: white">Sign up for free</button>
-			</a>
-		</div>
-	</div>
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">BLEXT</h1>
+        <hr />
+        <p>Ready for a brand new blog?</p>
+    </header>
+    <footer>
+        <a href="{{ url_for('auth.sign_up')}}" class="button circled scrolly">Start</a>
+    </footer>
 </div>
-<div class="footer">
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $('body').addClass('homepage');
+</script>
 {% endblock %}

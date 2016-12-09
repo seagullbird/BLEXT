@@ -45,3 +45,4 @@
 - dev15.0: Finished API and Blog format documentation.
 - dev16.0: Changed user blog page styple. Remaining: settings, blog_page, about_me, index (including sign in and sign up).
 - dev17.0: Changed style again. Using *Editorial* style now. Remaining problems sovled. Now there's still a slight defect with pagination style.
+- dev18.0: Finished homepage styling with Helios.

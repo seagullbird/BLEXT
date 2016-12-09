@@ -1,19 +1,39 @@
 {% extends "base.html" %}
 
-{% block page_content %}
-<div class="container area col-md-10 col-md-offset-1">
-	<div class="row clearfix">
-		<div class="col-md-8 column introduction">
-			<h1>Sign In</h1>
-			<h2>Sign In</h1>
-			<h2>Sign In</h1>
-			<h2>Sign In</h1>
-		</div>
-		<div class="col-md-3 column content" style="margin-top: 25px;
-	margin-left: 4%;">
-			{{ wtf.quick_form(form) }}
-			<p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
-		</div>
-	</div>
+{% block title %}BLEXT - Sign in{% endblock %}
+
+
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">Sign in</h1>
+    </header>
 </div>
+
+{% endblock %}
+
+{% block page_content %}
+<!-- Main -->
+<div class="wrapper style1">
+    <div class="container">
+        <article id="main" class="special">
+
+            <section>
+				{{ wtf.quick_form(form) }}
+				<br />
+				<p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click to reset.</a></p>
+            </section>
+
+        </article>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$('body').addClass('no-sidebar');
+</script>
 {% endblock %}

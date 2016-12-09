@@ -1,28 +1,28 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ host_user.blog_title or host_user.username}}{% endblock %}
 
 {% block head %}
 {{ super() }}
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/html5shiv.js') }}"></script><![endif]-->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/main.css') }}" />
-<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie8.css') }}" /><![endif]-->
-<!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie9.css') }}" /><![endif]-->
+<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie8.css') }}" /><![endif]-->
+<!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie9.css') }}" /><![endif]-->
 {% endblock %} 
 
 {% block content %}
 {{ super() }}
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{ message }}
+</div>
+
+{% endfor %}
 <!-- Wrapper -->
 <div id="wrapper">
 	<!-- flask flash -->
-	{% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %} 
+	
     {% block page_content %}{% endblock %}
     <!-- Sidebar -->
     <div id="sidebar">
@@ -85,9 +85,9 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/editorial/skel.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/editorial/util.js') }}"></script>
-<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/respond.min.js') }}"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/util.js') }}"></script>
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/respond.min.js') }}"></script><![endif]-->
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/html5shiv.js') }}"></script><![endif]-->
 <script src="{{ url_for('static', filename='js/editorial/main.js') }}"></script>
-<script src="https://use.fontawesome.com/ab291d07ba.js"></script>
 {% endblock %}
