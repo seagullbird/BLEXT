@@ -1,22 +1,33 @@
 {% extends "user/base.html" %}
 
 {% block page_content %}
-	<div id="content">
-		<div class="inner">
-			<article class="box post post-excerpt">
-				<header>
-					<h2>Categories</h2>
-				</header>
-				{% if categories %}
-				{% for cat in categories %}
-					<a href="{{ url_for('user.category', username=host_user.username, category_name=cat.name) }}">
-						<p>{{ cat.name }}</p>
-					</a>
-				{% endfor %}
-				{% else %}
-				<p>There's nothing here.</p>
-				{% endif %}
-			</article>
-		</div>
-	</div>
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <!-- Header -->
+        <header id="header">
+        	<h2>Categories</h2>
+        </header>
+        <section id="banner">
+        	{% if categories %}
+	        <ul>
+			{% for cat in categories %}
+				<li>
+				<a href="{{ url_for('user.category', username=host_user.username, category_name=cat.name) }}">
+					{{ cat.name }}
+				</a>
+				</li>
+			{% endfor %}
+			</ul>
+			{% else %}
+			<header id="header"></header>
+			<section>
+			    <header class="main">
+			        <h1>There's nothing here.</h1>
+			    </header>
+			</section>
+			{% endif %}
+        </section>
+    </div>
+</div>
 {% endblock %}

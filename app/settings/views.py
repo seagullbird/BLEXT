@@ -23,7 +23,7 @@ def admin_setting():
             return redirect(url_for('main.index'))
         else:
             flash('Invalid password.')
-    return render_template('settings/index.html', title='Change Password', form=form)
+    return render_template('user/settings.html', title='Personal Account', form=form, host_user=current_user)
 
 
 # 设置账户资料
@@ -44,4 +44,4 @@ def profile_setting():
             current_user.about_me = markdown(form.about_me.data)
         db.session.add(current_user)
         return redirect(url_for('user.index', username=current_user.username))
-    return render_template('settings/index.html', title='Public Profile', form=form, about_me=current_user.about_me_text)
+    return render_template('user/settings.html', title='Public Profile', form=form, host_user=current_user)

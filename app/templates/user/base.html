@@ -2,17 +2,22 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}{% endblock %}
+
 {% block head %}
 {{ super() }}
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/striped/ie/html5shiv.js') }}"></script><![endif]-->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/striped/main.css') }}" />
-<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/striped/ie8.css') }}" /><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/html5shiv.js') }}"></script><![endif]-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/main.css') }}" />
+<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie8.css') }}" /><![endif]-->
+<!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie9.css') }}" /><![endif]-->
 {% endblock %} 
+
 {% block content %}
 {{ super() }}
-<div class="container">
-    {% for message in get_flashed_messages() %}
+<!-- Wrapper -->
+<div id="wrapper">
+	<!-- flask flash -->
+	{% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         {{ message }}
@@ -21,29 +26,49 @@
     {% block page_content %}{% endblock %}
     <!-- Sidebar -->
     <div id="sidebar">
-        <!-- Logo -->
-        <h1 id="logo">
-        	<a href="#">
-				{% if host_user.blog_title %}
-				{{host_user.blog_title}}
-				{% else %}
-				{{host_user.username}}
-				{% endif %}
-        	</a>
-        </h1>
-        <!-- Nav -->
-        <nav id="nav">
-            <ul>
-                <li><a href="{{ url_for('user.index', username=host_user.username) }}">Home</a></li>
-                <li><a href="{{ url_for('editor.index') }}">Add a New Blog</a></li>
-                <li><a href="{{ url_for('user.about_me', username=host_user.username) }}">About Me</a></li>
-                <li><a href="{{ url_for('settings.profile_setting') }}">Settings</a></li>
-                <li><a href="{{ url_for('main.index') }}">Back to BLEXT</a></li>
-            </ul>
-        </nav>
-        <!-- Text -->
-        <section class="box text-style1">
-            <div class="inner">
+        <div class="inner">
+            <!-- Search -->
+			<!-- <section id="search" class="alt">
+                <form method="post" action="#">
+                    <input type="text" name="query" id="query" placeholder="Search" />
+                </form>
+            </section> -->
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>
+						{{ host_user.blog_title or host_user.username}}
+                    </h2>
+                </header>
+                <ul>
+                    <li><a href="{{ url_for('user.index', username=host_user.username) }}">Home</a></li>
+                    {% if host_user == current_user %}
+                    <li><a href="{{ url_for('editor.index') }}">Add a New Blog</a></li>
+                    <li>
+                        <span class="opener">Settings</span>
+                        <ul>
+                            <li><a href="{{url_for('settings.profile_setting')}}">Profile</a></li>
+                            <li><a href="{{url_for('settings.admin_setting')}}">Account</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <span class="opener">Aichives</span>
+                        <ul>
+                            <li><a href="{{ url_for('user.categories', username=host_user.username) }}">Categories</a></li>
+                            <li><a href="{{ url_for('user.tags', username=host_user.username) }}">Tags</a></li>
+                            {% if host_user == current_user %}
+					        <li><a href="{{ url_for('user.drafts', username=host_user.username) }}">Drafts</a></li>
+					        {% endif %}
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('user.about_me', username=host_user.username) }}">About Me</a></li>
+                    <li><a href="{{ url_for('main.index') }}">Back to BLEXT</a></li>
+                </ul>
+            </nav>
+
+            <!-- Section -->
+            <section>
                 {% if host_user.bio %}
 				<p>{{ host_user.bio }}</p>
 				{% else %}
@@ -51,29 +76,18 @@
 					Add a Bio
 				</a>
 				{% endif %}
-            </div>
-        </section>
-		<!-- Archives -->
-		<section class="box recent-posts">
-		    <header>
-		        <h2>Archives</h2>
-		    </header>
-		    <ul>
-		        <li class="current"><a href="{{ url_for('user.categories', username=host_user.username) }}">Categories</a></li>
-		        <li><a href="{{ url_for('user.tags', username=host_user.username) }}">Tags</a></li>
-		        {% if host_user == current_user %}
-		        <li><a href="{{ url_for('user.drafts', username=host_user.username) }}">Drafts</a></li>
-		        {% endif %}
-		    </ul>
-		</section>
+            </section>
+        </div>
+    </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/striped/skel.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/striped/util.js') }}"></script>
-<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/striped/respond.min.js') }}"></script><![endif]-->
-<script src="{{ url_for('static', filename='js/striped/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/editorial/skel.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/editorial/util.js') }}"></script>
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/respond.min.js') }}"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/editorial/main.js') }}"></script>
 <script src="https://use.fontawesome.com/ab291d07ba.js"></script>
 {% endblock %}

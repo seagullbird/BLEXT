@@ -1,0 +1,22 @@
+{% extends "user/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Settings{% endblock %}
+{% block page_content %}
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <!-- Header -->
+        <header id="header">
+        	<h2>{{ title }}</h2>
+        </header>
+        <!-- Banner -->
+        <section id="banner">
+            <div class="content">
+            {{wtf.quick_form(form)}}
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock %}
