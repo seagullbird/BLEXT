@@ -12,13 +12,6 @@
 
 {% block content %}
 {{ super() }}
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{ message }}
-</div>
-
-{% endfor %}
 <!-- Wrapper -->
 <div id="wrapper">
 	<!-- flask flash -->
@@ -88,6 +81,5 @@
 <script src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/util.js') }}"></script>
 <!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/respond.min.js') }}"></script><![endif]-->
-<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/html5shiv.js') }}"></script><![endif]-->
 <script src="{{ url_for('static', filename='js/editorial/main.js') }}"></script>
 {% endblock %}
