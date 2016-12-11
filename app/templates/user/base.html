@@ -8,14 +8,15 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/main.css') }}" />
 <!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie8.css') }}" /><![endif]-->
 <!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie9.css') }}" /><![endif]-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-style-growl.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-default.css') }}" />
+<script src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
 {% endblock %} 
 
 {% block content %}
 {{ super() }}
 <!-- Wrapper -->
 <div id="wrapper">
-	<!-- flask flash -->
-	
     {% block page_content %}{% endblock %}
     <!-- Sidebar -->
     <div id="sidebar">
@@ -61,7 +62,7 @@
             </nav>
 
             <!-- Section -->
-            <section>
+            <section style="text-align: center">
                 {% if host_user.bio %}
 				<p>{{ host_user.bio }}</p>
 				{% else %}
@@ -82,4 +83,21 @@
 <script src="{{ url_for('static', filename='js/util.js') }}"></script>
 <!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/respond.min.js') }}"></script><![endif]-->
 <script src="{{ url_for('static', filename='js/editorial/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/notificationFx.js') }}"></script>
+<script src="{{ url_for('static', filename='js/classie.js') }}"></script>
+{% for message in get_flashed_messages() %}
+<script>
+// create the notification
+var notification = new NotificationFx({
+    message : '<p>{{message}}</p>',
+    layout : 'growl',
+    ttl: 6000,
+    effect : 'scale',
+    type : 'notice', // notice, warning, error or success
+});
+
+// show the notification
+notification.show();
+</script>
+{% endfor %}
 {% endblock %}

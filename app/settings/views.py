@@ -23,6 +23,7 @@ def admin_setting():
             return redirect(url_for('main.index'))
         else:
             flash('Invalid password.')
+            return redirect(url_for('settings.admin_setting'))
     return render_template('user/settings.html', title='Personal Account', form=form, host_user=current_user)
 
 
