@@ -115,11 +115,11 @@ class User(db.Model, UserMixin):
     # 将用户资源转化为JSON格式的序列化字典（用于api）
     def to_json(self):
         return {
-            'url': url_for('api.get_user', _external=True),
+            'url': url_for('api.get_user', _external=True, _scheme="https"),
             'username': self.username,
-            'blogs': url_for('api.get_blogs', _external=True),
-            'categories': url_for('api.get_user_categories', _external=True),
-            'tags': url_for('api.get_user_tags', _external=True),
+            'blogs': url_for('api.get_blogs', _external=True, _scheme="https"),
+            'categories': url_for('api.get_user_categories', _external=True, _scheme="https"),
+            'tags': url_for('api.get_user_tags', _external=True, _scheme="https"),
             'avatar_url': self.avatar_url,
             'blog_count': self.blogs.count()
         }
@@ -233,18 +233,18 @@ class Blog(db.Model):
 
     # 将博客文章资源转化为JSON格式的序列化字典（用于api）
     def to_json(self):
-        # _external=True 指定生成完整 URL （而不是相对 URL ）
+        # _external=True, _scheme="https" 指定生成完整 URL （而不是相对 URL ）
         return {
-            'url': url_for('api.get_blog', blog_id=self.id, _external=True),
+            'url': url_for('api.get_blog', blog_id=self.id, _external=True, _scheme="https"),
             'id': self.id,
             'title': self.title,
             'summary_text': self.summary_text,
             'body': self.body,
             'timestamp': self.timestamp,
             'draft': self.draft,
-            'author': url_for('api.get_user', _external=True),
-            'category': url_for('api.get_blog_category', blog_id=self.id, _external=True),
-            'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True)
+            'author': url_for('api.get_user', _external=True, _scheme="https"),
+            'category': url_for('api.get_blog_category', blog_id=self.id, _external=True, _scheme="https"),
+            'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True, _scheme="https")
         }
 
     def __repr__(self):
