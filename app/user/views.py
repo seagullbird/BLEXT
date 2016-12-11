@@ -11,14 +11,16 @@ from .. import db
 def index(username):
     # 查找博客主人
     host_user = User.query.filter_by(username=username).first()
-    # 添加分页
-    page = request.args.get('page', 1, type=int)
-    # 每页显示的博客数保存在配置里
-    pagination = Blog.query.filter_by(author_id=host_user.id, draft=False).order_by(Blog.timestamp.desc()).paginate(
-        page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
-    # 获得用户所有文章（按时间戳顺序）
-    blogs = pagination.items
-    return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
+    if host_user:
+        # 添加分页
+        page = request.args.get('page', 1, type=int)
+        # 每页显示的博客数保存在配置里
+        pagination = Blog.query.filter_by(author_id=host_user.id, draft=False).order_by(Blog.timestamp.desc()).paginate(
+            page, per_page=current_app.config['BLEXT_BLOGS_PER_PAGE'], error_out=False)
+        # 获得用户所有文章（按时间戳顺序）
+        blogs = pagination.items
+        return render_template('user/index.html', blogs=blogs, pagination=pagination, host_user=host_user)
+    abort(404)
 
 
 # 文章分类总路由
