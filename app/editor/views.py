@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import editor
 from flask import render_template, request, redirect, url_for, flash, session, abort
-from flask_login import current_user
+from flask_login import current_user, login_required
 from .. import db
 from ..models import Blog
 from ..exceptions import ParsingError
@@ -15,6 +15,7 @@ from ..exceptions import ParsingError
 
 
 @editor.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     if not current_user.is_authenticated:
         abort(404)
@@ -61,7 +62,7 @@ def index():
             return redirect(url_for('editor.index'))
         else:
             flash('There is something wrong in your format. Committing abolished.')
-            return render_template('editor/index.html', text=blog_text)
+            return render_template('editor/index.html', text=blog_text, home_url=url_for('user.index', username=current_user.username))
 
     # 如果 session 中有 blog_id 值说明是从 edit 路由重定向过来的
     if session.get('blog_id'):
@@ -72,14 +73,15 @@ def index():
         # 查找该博文如果存在：
         if blog:
             # 将已有内容渲染到页面上，并附上 blog_id 作为隐藏标签的值
-            return render_template('editor/index.html', text=blog.body, blog_id=blog_id)
+            return render_template('editor/index.html', text=blog.body, blog_id=blog_id, home_url=url_for('user.index', username=current_user.username))
 
-    placeholder = '---\ntitle: <title>\ncategory: <category>\ntags: []\n---\n<summary>\n<!-- more -->\n<Content>'
-    return render_template('editor/index.html', text=placeholder)
+    placeholder = '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->'
+    return render_template('editor/index.html', text=placeholder, home_url=url_for('user.index', username=current_user.username))
 
 
 # 用户文章重新编辑路由（博文页面上的 edit 按钮）
 @editor.route('/edit/<int:blog_id>')
+@login_required
 def edit(blog_id):
     session['blog_id'] = blog_id
     return redirect(url_for('editor.index'))

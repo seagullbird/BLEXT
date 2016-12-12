@@ -1,26 +1,59 @@
-	// text validation
-	function validate_text() {
-		// for testing
-		return true;
-		if ($('#plainText').val() != '') return true;
-		alert('Nothing is wrtten!')
-		return false;		
-	}
-
-	$('#publish').click(function() {
-		if (validate_text()) {
-			$('#draft').val(false);
-	    	$('#text_form').submit();
-		} 
-	});
-
-	$('#sava_draft').click(function() {
-		if (validate_text()) {
-			$('#draft').val(true);
-	    	$('#text_form').submit();
-		} 
-	});
-
-	window.onload = function() {
-		$("#plainText").markdown({autofocus:true, iconlibrary:'fa'});
-	}
+var simplemde = new SimpleMDE({
+    autofocus: true,
+    element: $("#editor")[0],
+    status: false,
+    placeholder: '---\ntitle:\ncategory:\ntags: [,]\n\n---\nYour summary here.\n<!-- more -->',
+    spellChecker: false,
+    renderingConfig: {
+        codeSyntaxHighlighting: true
+    },
+    tabSize: 4,
+    toolbar: [{
+            name: "home",
+            className: "fa fa-home",
+            title: "Back",
+        },
+        '|',
+        'bold',
+        'italic',
+        'strikethrough',
+        'heading',
+        '|',
+        'code',
+        'quote',
+        '|',
+        'unordered-list',
+        'ordered-list',
+        '|',
+        'link',
+        'image',
+        'table',
+        '|',
+        'preview',
+        'side-by-side',
+        '|', {
+            name: "saveDraft",
+            action: function customFunction(editor) {
+                // Save draft
+                if ($('#plainText').val() != '') {
+                    $('#draft').val(true);
+                    $('#text_form').submit();
+                }
+            },
+            className: "fa fa-save",
+            title: "Save as draft",
+        }, {
+            name: "publish",
+            action: function customFunction(editor) {
+                // Publish
+                if ($('#plainText').val() != '') {
+                    $('#draft').val(false);
+                    $('#text_form').submit();
+                }
+            },
+            className: "fa fa-paper-plane",
+            title: "Publish",
+        }
+    ]
+});
+simplemde.toggleFullScreen();

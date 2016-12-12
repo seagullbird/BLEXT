@@ -31,7 +31,7 @@
             <nav id="menu">
                 <header class="major">
                     <h2>
-						{{ host_user.blog_title or host_user.username}}
+						{{ host_user.blog_title or host_user.username+"'s blog"}}
                     </h2>
                 </header>
                 <ul>
@@ -62,18 +62,26 @@
             </nav>
 
             <!-- Section -->
-            <section style="text-align: center">
-            {% if host_user == current_user %}
-                {% if host_user.bio %}
-				<p>{{ host_user.bio }}</p>
-				{% else %}
-				<a href="{{ url_for('settings.profile_setting') }}">
-					Add a Bio
-				</a>
-				{% endif %}
-            {% else %}
-            <p>{{ host_user.bio or 'He does not have a bio.' }}</p>
-            {% endif %}
+            <section>
+                <header class="major">
+                    <h2>{{ host_user.username }}</h2>
+                </header>
+                <div class="mini-posts">
+                    <article>
+                        <a class="image"><img src="{{ host_user.avatar_url or url_for('static', filename='img/guest.png') }}" alt="" /></a>
+                        {% if host_user == current_user %}
+                            {% if host_user.bio %}
+                            <p>{{ host_user.bio }}</p>
+                            {% else %}
+                            <a href="{{ url_for('settings.profile_setting') }}">
+                                Add a Bio
+                            </a>
+                            {% endif %}
+                        {% else %}
+                        <p>{{ host_user.bio or 'He does not have a bio.' }}</p>
+                        {% endif %}
+                    </article>
+                </div>
             </section>
         </div>
     </div>
