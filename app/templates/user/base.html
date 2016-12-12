@@ -63,6 +63,7 @@
 
             <!-- Section -->
             <section style="text-align: center">
+            {% if host_user == current_user %}
                 {% if host_user.bio %}
 				<p>{{ host_user.bio }}</p>
 				{% else %}
@@ -70,6 +71,9 @@
 					Add a Bio
 				</a>
 				{% endif %}
+            {% else %}
+            <p>{{ host_user.bio or 'He does not have a bio.' }}</p>
+            {% endif %}
             </section>
         </div>
     </div>
