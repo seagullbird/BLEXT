@@ -60,6 +60,8 @@ def get_blog_tags(blog_id):
 # 发布新文章端点
 @api.route('/blogs/', methods=['POST'])
 def new_blog():
+    if not request.json:
+        return bad_request("No JSON found")
     body = request.json.get('body')
     draft = request.json.get('draft')
     if body is None or body == '':
