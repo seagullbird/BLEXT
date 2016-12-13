@@ -78,7 +78,7 @@ def new_blog():
         return jsonify(blog.to_json()), 201, \
             {'Location': url_for(
                 'api.get_blog', blog_id=blog.id, _external=True, _scheme='https')}
-    except ParsingError:
+    except Exception:
         return bad_request('There is something wrong in your format. Committing abolished.')
 
 
@@ -96,8 +96,7 @@ def edit_blog(blog_id):
                 db.session.add(blog)
                 db.session.commit()
                 return jsonify(blog.to_json())
-            except ParsingError as e:
-                print(e)
+            except Exception:
                 return bad_request('There is something wrong in your format. Committing abolished.')
         return forbidden('Insufficient permissions')
     return bad_request('Blog not found')
