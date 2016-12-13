@@ -1,6 +1,6 @@
 # BLEXT —— One stop blog supplier
 
-[![Build Status](https://travis-ci.org/seagullbird/BLEXT.svg?branch=master)](https://travis-ci.org/seagullbird/BLEXT)    [![Documentation Status](https://readthedocs.org/projects/blext/badge/?version=latest)](http://blext.readthedocs.io/en/latest/?badge=latest)
+[![Coverage Status](https://coveralls.io/repos/github/seagullbird/BLEXT/badge.svg)](https://coveralls.io/github/seagullbird/BLEXT)    [![Build Status](https://travis-ci.org/seagullbird/BLEXT.svg?branch=master)](https://travis-ci.org/seagullbird/BLEXT)    [![Documentation Status](https://readthedocs.org/projects/blext/badge/?version=latest)](http://blext.readthedocs.io/en/latest/?badge=latest)
 
 BLEXT is a blog website where you can finish the whole "edit - store - publish" blogging process in one place, providing ultimate personal blog experience.
 

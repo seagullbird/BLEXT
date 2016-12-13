@@ -259,7 +259,7 @@ class FlaskClientTestCase(unittest.TestCase):
         db.session.commit()
 
         # wait for committing
-        time.sleep(10)
+        time.sleep(20)
 
         # get index
         response = self.client.get(url_for('user.index', username='mike'))
