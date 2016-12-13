@@ -33,7 +33,6 @@ class APITestCase(unittest.TestCase):
         response = self.client.get(
             '/wrong/url', headers=self.get_api_headers('email', 'password'))
         self.assertTrue(response.status_code == 404)
-        self.assertTrue(b'Not Found' in response.data)
 
     def test_no_auth(self):
         response = self.client.get(url_for('api.get_blogs'),

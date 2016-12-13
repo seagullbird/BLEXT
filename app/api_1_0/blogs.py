@@ -75,7 +75,7 @@ def new_blog():
         db.session.commit()
         return jsonify(blog.to_json()), 201, \
             {'Location': url_for(
-                'api.get_blog', blog_id=blog.id, _external=True)}
+                'api.get_blog', blog_id=blog.id, _external=True, _scheme='https')}
     except ParsingError:
         return bad_request('There is something wrong in your format. Committing abolished.')
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import re
-from app.models import User, Blog, Category
 import time
+import re
+from app.models import User, Blog
 from app import db, create_app
 import unittest
 from flask import url_for
@@ -27,7 +27,7 @@ class FlaskClientTestCase(unittest.TestCase):
     # 测试主页请求
     def test_home_page(self):
         response = self.client.get(url_for('main.index'))
-        self.assertTrue(b'Welcome to BLEXT' in response.data)
+        self.assertTrue(b'BLEXT' in response.data)
 
     # 测试新用户注册和登录
     def test_authentication(self):
@@ -76,7 +76,7 @@ class FlaskClientTestCase(unittest.TestCase):
                 'password2': 'dog'
             }, follow_redirects=True)
 
-        self.assertTrue(b'Sign In' in response.data)
+        self.assertTrue(b'Sign in' in response.data)
 
         # re sign up with same email and username
         response = self.client.post(url_for('auth.sign_up'), data={
@@ -163,12 +163,13 @@ class FlaskClientTestCase(unittest.TestCase):
             'password': 'dog',
             'password2': 'dog'
         }, follow_redirects=True)
-        self.assertTrue(b'Welcome to BLEXT' in response.data)
+        self.assertTrue(b'BLEXT' in response.data)
 
     # 测试编辑器页
     def test_editor(self):
         response = self.client.get(url_for('editor.index'))
-        self.assertTrue(response.status_code == 404)
+        # 未登录应被重定向到登录页
+        self.assertTrue(response.status_code == 302)
 
         # add a user
         u = User(email='mike@example.com', username='mike',
@@ -185,7 +186,7 @@ class FlaskClientTestCase(unittest.TestCase):
 
         response = self.client.get(url_for('editor.index'))
         self.assertTrue(response.status_code == 200)
-        self.assertTrue(b'EDITOR' in response.data)
+        self.assertTrue(b'Editor' in response.data)
 
         # write a new draft blog
         blog_body = '---\ntitle: <title>\ncategory: <category>\ntags: []\n---\n<summary>\n<!-- more -->\n<Content>'
@@ -257,10 +258,8 @@ class FlaskClientTestCase(unittest.TestCase):
         db.session.add_all([blog, blog2])
         db.session.commit()
 
-        # for cat in Category.query.all():
-        #     print(cat.author)
-        # # wait for committing
-        # time.sleep(2)
+        # wait for committing
+        time.sleep(10)
 
         # get index
         response = self.client.get(url_for('user.index', username='mike'))
