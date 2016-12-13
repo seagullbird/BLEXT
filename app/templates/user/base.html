@@ -6,6 +6,7 @@
 {% block head %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/main.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/simplemde.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/github.css') }}" />
 <!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie8.css') }}" /><![endif]-->
 <!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie9.css') }}" /><![endif]-->
@@ -70,6 +71,7 @@
                 <div class="mini-posts">
                     <article>
                         <a class="image"><img src="{{ host_user.avatar_url or url_for('static', filename='img/guest.png') }}" alt="" /></a>
+                        <strong>
                         {% if host_user == current_user %}
                             {% if host_user.bio %}
                             <p>{{ host_user.bio }}</p>
@@ -81,6 +83,7 @@
                         {% else %}
                         <p>{{ host_user.bio or 'He does not have a bio.' }}</p>
                         {% endif %}
+                        </strong>
                     </article>
                 </div>
             </section>
@@ -92,12 +95,13 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simplemde/1.11.2/simplemde.min.js"></script>
 <script src="{{ url_for('static', filename='js/util.js') }}"></script>
 <!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/respond.min.js') }}"></script><![endif]-->
 <script src="{{ url_for('static', filename='js/editorial/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/notificationFx.js') }}"></script>
-<script src="{{ url_for('static', filename='js/classie.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/classie/1.0.1/classie.min.js"></script>
 {% for message in get_flashed_messages() %}
 <script>
 // create the notification

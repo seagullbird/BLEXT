@@ -80,15 +80,15 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/skel.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
 <script src="{{ url_for('static', filename='js/util.js') }}"></script>
 <!--[if lte IE 8]><script src="{{ url_for('static', filename='js/helios/ie/respond.min.js') }}"></script><![endif]-->
 <script src="{{ url_for('static', filename='js/helios/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/helios/jquery.dropotron.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.dropotron/1.4.3/jquery.dropotron.min.js"></script>
 <script src="{{ url_for('static', filename='js/helios/jquery.scrolly.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/helios/jquery.onvisible.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/notificationFx.js') }}"></script>
-<script src="{{ url_for('static', filename='js/classie.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/classie/1.0.1/classie.min.js"></script>
 {% for message in get_flashed_messages() %}
 <script>
   // create the notification

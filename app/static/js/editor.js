@@ -20,7 +20,6 @@ var simplemde = new SimpleMDE({
         '|',
         'code',
         'quote',
-        '|',
         'unordered-list',
         'ordered-list',
         '|',

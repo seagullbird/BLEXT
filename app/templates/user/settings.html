@@ -20,3 +20,16 @@
 </div>
 
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+var simplemde = new SimpleMDE({
+    spellChecker: false,
+    tabSize: 4,
+    hideIcons: ['side-by-side', 'fullscreen'],
+    showIcons: ['code', 'table']
+});
+</script>
+
+{% endblock %}
