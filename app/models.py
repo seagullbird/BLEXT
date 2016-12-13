@@ -161,6 +161,7 @@ class Blog(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # 是否草稿
     draft = db.Column(db.Boolean, default=False)
+        
 
     # 当body属性更新时，自动从body中解析出其余各项属性并更新（或新建）
     @staticmethod
@@ -267,7 +268,7 @@ class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     # 分类名
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(128))
     # 对应的文章
     blogs = db.relationship('Blog', backref='category', lazy='dynamic')
     # 对应的用户
@@ -298,7 +299,7 @@ class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     # 标签名
-    name = db.Column(db.String(20))
+    name = db.Column(db.String(128))
     # 对应的用户
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 

@@ -65,6 +65,15 @@ class Blog_Parser():
             self.content = m.group(2).strip()
         else:
             self.content = self.body
+
+        # 验证长度
+        for tag_name in self.tags:
+            if len(tag_name) > 128:
+                tag_name = tag_name[:128]
+        if len(self.title) < 128:
+            self.title = self.title[:128]
+        if len(self.category) < 128:
+            self.category = self.category[:128]
         return self.title, self.category, self.tags, self.summary_text, self.content
 
 
