@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, url_for
 from datetime import datetime
-import mistune
+from .blog_parser import parse_markdown
 import bleach
 from .blog_parser import Blog_Parser
 from .exceptions import ParsingError
@@ -165,21 +165,26 @@ class Blog(db.Model):
     # 当body属性更新时，自动从body中解析出其余各项属性并更新（或新建）
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        markdown = mistune.Markdown()
         blog_parser = Blog_Parser(value)
         # html中允许的html标签
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']
+                        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'del', 'img', 'div']
+        allowed_attrs = {
+            '*': ['class'],
+            'a': ['href', 'rel'],
+            'img': ['alt', 'src'],
+        }
         # 利用parse函数从value（也就是被改变的body）值中解析出各项属性并赋值
         try:
             title, category_name, tag_names, summary_text, content = blog_parser.parse()
             target.title = title
             target.summary_text = summary_text
-            target.summary = markdown(summary_text)
-            target.html = bleach.linkify(bleach.clean(
-                markdown(content),
-                tags=allowed_tags, strip=True))
+            target.summary = parse_markdown(summary_text)
+            target.html = bleach.clean(
+                parse_markdown(content),
+                tags=allowed_tags, attributes=allowed_attrs, strip=True)
+            # target.html = parse_markdown(content)
             target.change_category(Category.generate_category(
                 category_name, target.author_id))
             target.change_tags(Tag.generate_tags([t.strip() for t in tag_names.strip(

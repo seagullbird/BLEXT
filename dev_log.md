@@ -47,3 +47,4 @@
 - dev17.0: Changed style again. Using *Editorial* style now. Remaining problems sovled. Now there's still a slight defect with pagination style.
 - dev18.0: Finished homepage styling with Helios.
 - dev19.0: Brand new editor. Bugs fixed.
+- dev.20.0: Fixed markdown parsing bugs, added code highlight.

@@ -16,7 +16,6 @@ var simplemde = new SimpleMDE({
         '|',
         'bold',
         'italic',
-        'strikethrough',
         'heading',
         '|',
         'code',
