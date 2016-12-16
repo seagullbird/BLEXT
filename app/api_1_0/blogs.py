@@ -18,10 +18,10 @@ def get_blogs():
     blogs = pagination.items
     prev = None
     if pagination.has_prev:
-        prev = url_for('api.get_blogs', page=page - 1, _external=True)
+        prev = url_for('api.get_blogs', page=page - 1, _external=True, _scheme="https")
     next = None
     if pagination.has_next:
-        next = url_for('api.get_blogs', page=page + 1, _external=True)
+        next = url_for('api.get_blogs', page=page + 1, _external=True, _scheme="https")
     return jsonify({
         'blogs': [blog.to_json() for blog in blogs],
         'prev': prev,
