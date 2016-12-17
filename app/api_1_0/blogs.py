@@ -4,7 +4,6 @@ from ..models import Blog
 from . import api
 from .errors import bad_request, forbidden
 from .. import db
-from app.exceptions import ParsingError
 
 
 # 当前用户的所有文章端点
@@ -18,10 +17,12 @@ def get_blogs():
     blogs = pagination.items
     prev = None
     if pagination.has_prev:
-        prev = url_for('api.get_blogs', page=page - 1, _external=True, _scheme="https")
+        prev = url_for('api.get_blogs', page=page - 1,
+                       _external=True, _scheme="https")
     next = None
     if pagination.has_next:
-        next = url_for('api.get_blogs', page=page + 1, _external=True, _scheme="https")
+        next = url_for('api.get_blogs', page=page + 1,
+                       _external=True, _scheme="https")
     return jsonify({
         'blogs': [blog.to_json() for blog in blogs],
         'prev': prev,
@@ -68,9 +69,9 @@ def new_blog():
         return bad_request('blog does not have a body')
     if draft is None or draft == '':
         return bad_request('blog does not have a draft value')
+    draft = False
     if draft == 'true':
         draft = True
-    draft = False
     try:
         blog = Blog(body=body, draft=draft, author_id=g.current_user.id)
         db.session.add(blog)
