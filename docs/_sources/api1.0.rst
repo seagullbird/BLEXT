@@ -312,11 +312,11 @@ If your *blog body* is properly composed according to the :ref:`blog format <blo
 
 Update an Existing Blog
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-Updating an existing blog is pretty much the same as creating a new one. Except that if an existing blog is to be updated, a blog id should be provided.
+Updating an existing blog is pretty much the same as creating a new one. Except that if an existing blog is to be updated, a blog id should be provided. Besides, you should use ``PUT`` instead of ``POST`` to update an existing blog.
 
 .. code-block:: shell
 
-	$ http --json --auth token: POST https://blext.herokuapp.com/api/v1.0/blogs/1 \
+	$ http --json --auth token: PUT https://blext.herokuapp.com/api/v1.0/blogs/1 \
 	> "body=<body>" \
 	> "draft=false"
 
