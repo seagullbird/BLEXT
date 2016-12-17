@@ -69,9 +69,6 @@ def new_blog():
         return bad_request('blog does not have a body')
     if draft is None or draft == '':
         return bad_request('blog does not have a draft value')
-    draft = False
-    if draft == 'true':
-        draft = True
     try:
         blog = Blog(body=body, draft=draft, author_id=g.current_user.id)
         db.session.add(blog)
@@ -91,9 +88,7 @@ def edit_blog(blog_id):
         if blog.author_id == g.current_user.id:
             try:
                 blog.body = request.json.get('body')
-                blog.draft = False
-                if request.json.get('draft') == 'true':
-                    blog.draft = True
+                blog.draft = request.json.get('draft')
                 db.session.add(blog)
                 db.session.commit()
                 return jsonify(blog.to_json())
