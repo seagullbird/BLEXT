@@ -6,6 +6,7 @@ from app.models import Category, User
 
 
 class CategoryModelTestCase(unittest.TestCase):
+
     def setUp(self):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
