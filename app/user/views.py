@@ -38,6 +38,7 @@ def category(username, category_name):
     host_user = User.query.filter_by(username=username).first()
     category = Category.query.filter_by(
         name=category_name, author_id=host_user.id).first()
+    print(host_user, category)
     if not host_user or not category:
         abort(404)
     # 添加分页
