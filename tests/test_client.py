@@ -258,9 +258,6 @@ class FlaskClientTestCase(unittest.TestCase):
         db.session.add_all([blog, blog2])
         db.session.commit()
 
-        # wait for committing
-        time.sleep(20)
-
         # get index
         response = self.client.get(url_for('user.index', username='mike'))
         self.assertTrue(response.status_code == 200)
