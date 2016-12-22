@@ -42,24 +42,18 @@ class BlogModelTestCase(unittest.TestCase):
     def test_body_parsing_error(self):
         try:
             blog = Blog(body='wrong format')
-            db.session.add(blog)
-            db.session.commit()
             self.assertTrue(False)
         except ParsingError as e:
-            self.assertTrue(e.args[0] == 'wrong when parsing input')
+            self.assertTrue(str(e) == 'wrong when parsing input')
         try:
             blog = Blog(
                 body='---wrong header---\n<summary>\n<!-- more -->\n<Content>')
-            db.session.add(blog)
-            db.session.commit()
             self.assertTrue(False)
         except ParsingError as e:
-            self.assertTrue(e.args[0] == 'wrong when parsing header')
+            self.assertTrue(str(e) == 'wrong when parsing header')
         try:
             blog = Blog(
                 body='---\ntitle: <title>\ncategory: <category>\ntags: [tag1, tag2, tag3]\n---\n<Content>')
-            db.session.add(blog)
-            db.session.commit()
             self.assertTrue(True)
         except Exception as e:
             self.assertTrue(False)

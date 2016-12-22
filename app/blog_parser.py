@@ -21,6 +21,7 @@ import mistune
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import html
+import bleach
 
 
 class Blog_Parser():
@@ -29,25 +30,20 @@ class Blog_Parser():
     tags = ''
     summary_text = ''
     content = ''
-
     body = ''
     header = ''
+    re_input = r'^[\s\S]*?---([\s\S]*?)---([\s\S]*)$'
+    re_header = r'^[\s\S]*?title:\s*([\w\W]*?)\n[\s\S]*?(category|categories):\s*([\w\W]*?)\n[\s\S]*?tags:\s*[[]([\w\W]*?)[]][\s\S]*?$'
+    re_body = r'^([\s\S]*?)<!-- more -->([\s\S]*?)$'
 
-    def __init__(self, input):
-        self.input = input
-        self.re_input = r'^[\s\S]*?---([\s\S]*?)---([\s\S]*)$'
-        self.re_header = r'^[\s\S]*?title:\s*([\w\W]*?)\n[\s\S]*?(category|categories):\s*([\w\W]*?)\n[\s\S]*?tags:\s*[[]([\w\W]*?)[]][\s\S]*?$'
-        self.re_body = r'^([\s\S]*?)<!-- more -->([\s\S]*?)$'
-        self.parse()
-
-    def parse(self):
+    def parse(self, input):
         # 先尝试将输入分成 header 和 body（也许包含ummary）两部分
-        m = re.match(self.re_input, self.input)
+        m = re.match(self.re_input, input)
         try:
             self.header = m.group(1).strip()
             self.body = m.group(2).strip()
         except:
-            self.body = self.input
+            self.body = input
             raise ParsingError('wrong when parsing input')
         # 尝试从 header 中提取 title， category，tags
         m = re.match(self.re_header, self.header)
@@ -90,7 +86,18 @@ class HighlightRenderer(mistune.Renderer):
 
 
 def parse_markdown(markdown_text):
+    # html中允许的html标签
+    allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                    'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'del', 'img', 'div']
+    allowed_attrs = {
+        '*': ['class'],
+        'a': ['href', 'rel'],
+        'img': ['alt', 'src'],
+    }
     # renderer for code highlight
     renderer = HighlightRenderer()
     parser = mistune.Markdown(renderer=renderer)
-    return parser(markdown_text)
+    return bleach.clean(
+        parser(markdown_text),
+        tags=allowed_tags, attributes=allowed_attrs, strip=True)
