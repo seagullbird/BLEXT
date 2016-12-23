@@ -85,6 +85,7 @@ class HighlightRenderer(mistune.Renderer):
         return highlight(code, lexer, formatter)
 
 
+# 将 markdown 格式文本解析为 html 并过滤标签
 def parse_markdown(markdown_text):
     # html中允许的html标签
     allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
