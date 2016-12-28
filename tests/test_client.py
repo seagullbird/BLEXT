@@ -266,26 +266,24 @@ class FlaskClientTestCase(unittest.TestCase):
         self.assertTrue(
             b'There is something wrong in your format. Committing abolished' in response.data)
 
-    # 测试用户主页
-    def test_user(self):
-        # add two users, two draft blogs, two categories and two tags
+    # 测试用户主页（匿名）
+    def test_user_annonymous(self):
+        # add one user with one blog with one cat and tag
         u = User(email='mike@example.com', username='mike',
                  password='cat', confirmed=True)
-        u2 = User(email='jack@example.com', username='jack',
-                  password='dog', confirmed=True)
-        db.session.add_all([u, u2])
+        db.session.add(u)
         db.session.commit()
         blog = Blog(
             body='---\ntitle: <title1>\ncategory: cat1\ntags: [tag1]\n---\n<summary>\n<!-- more -->\n<Content>', author_id=u.id, draft=True)
-        blog2 = Blog(
-            body='---\ntitle: <title2>\ncategory: cat2\ntags: [tag2]\n---\n<summary>\n<!-- more -->\n<Content>', author_id=u2.id, draft=True)
-        db.session.add_all([blog, blog2])
+        db.session.add(blog)
         db.session.commit()
 
         # get index
         response = self.client.get(url_for('user.index', username='mike'))
         self.assertTrue(response.status_code == 200)
         self.assertTrue(b'mike' in response.data)
+        response = self.client.get(url_for('user.index', username='tom'))
+        self.assertTrue(response.status_code == 404)
 
         # categories page
         response = self.client.get(url_for('user.categories', username='mike'))
@@ -304,14 +302,34 @@ class FlaskClientTestCase(unittest.TestCase):
             url_for('user.category', username='mike', category_name='cat1'))
         self.assertTrue(response.status_code == 200)
         self.assertFalse(b'title1' in response.data)
-        self.assertFalse(b'title2' in response.data)
+        response = self.client.get(
+            url_for('user.category', username='mike', category_name='cat2'))
+        self.assertTrue(response.status_code == 404)
 
         # single tag list (anonymous)
         response = self.client.get(
             url_for('user.tag', username='mike', tag_name='tag1'))
         self.assertTrue(response.status_code == 200)
         self.assertFalse(b'title1' in response.data)
-        self.assertFalse(b'title2' in response.data)
+        response = self.client.get(
+            url_for('user.tag', username='mike', tag_name='tag2'))
+        self.assertTrue(response.status_code == 404)
+
+    # 测试用户主页（非匿名）
+    def test_user(self):
+        # add two users, two draft blogs, two categories and two tags
+        u = User(email='mike@example.com', username='mike',
+                 password='cat', confirmed=True)
+        u2 = User(email='jack@example.com', username='jack',
+                  password='dog', confirmed=True)
+        db.session.add_all([u, u2])
+        db.session.commit()
+        blog = Blog(
+            body='---\ntitle: <title1>\ncategory: cat1\ntags: [tag1]\n---\n<summary>\n<!-- more -->\n<Content>', author_id=u.id, draft=True)
+        blog2 = Blog(
+            body='---\ntitle: <title2>\ncategory: cat2\ntags: [tag2]\n---\n<summary>\n<!-- more -->\n<Content>', author_id=u2.id, draft=True)
+        db.session.add_all([blog, blog2])
+        db.session.commit()
 
         # sign in
         response = self.client.post(url_for('auth.sign_in'), data={

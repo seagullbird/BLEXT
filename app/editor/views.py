@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import editor
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import current_user, login_required
 from .. import db
 from ..models import Blog
@@ -17,8 +17,6 @@ from ..exceptions import ParsingError
 @editor.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    if not current_user.is_authenticated:
-        abort(404)
     # 如果是 POST 请求，说明用户提交了一篇新文章
     # 接下来是通过 POST 的表单中的数据在数据库中创建新文章
     if request.method == 'POST':
