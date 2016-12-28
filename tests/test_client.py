@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import time
 import re
 from app.models import User, Blog
 from app import db, create_app
@@ -29,7 +28,7 @@ class FlaskClientTestCase(unittest.TestCase):
         response = self.client.get(url_for('main.index'))
         self.assertTrue(b'BLEXT' in response.data)
 
-    # 测试新用户注册和登录
+    # 测试新用户注册和登录以及重设密码等基本操作
     def test_authentication(self):
         # register a new account
         response = self.client.post(url_for('auth.sign_up'), data={
@@ -57,10 +56,25 @@ class FlaskClientTestCase(unittest.TestCase):
         response = self.client.get(url_for('auth.resend_confirmation'))
         self.assertTrue(response.status_code == 302)
 
+        # reset password page (while logged in)
+        response = self.client.get(
+            url_for('auth.password_reset_request'), follow_redirects=True)
+        self.assertTrue(
+            b'BLEXT' in response.data)
+        response = self.client.get(
+            url_for('auth.password_reset', token=user.generate_reset_token()))
+
+        self.assertTrue(response.status_code == 302)
+
         # sign out
         response = self.client.get(
             url_for('auth.sign_out'), follow_redirects=True)
         self.assertTrue(b'You have been signed out' in response.data)
+
+        # reset password page
+        response = self.client.get(url_for('auth.password_reset_request'))
+        self.assertTrue(
+            b'Enter your email you registered when signed up, an confirmation email will be sent to you right away.' in response.data)
 
         # reset password request
         response = self.client.post(url_for('auth.password_reset_request'), data={
@@ -69,6 +83,9 @@ class FlaskClientTestCase(unittest.TestCase):
         self.assertTrue(response.status_code == 302)
 
         # reset password
+        response = self.client.get(
+            url_for('auth.password_reset', token=user.generate_reset_token()))
+        self.assertTrue(b'Please reset your password.' in response.data)
         response = self.client.post(
             url_for('auth.password_reset', token=user.generate_reset_token()), data={
                 'email': 'mike@example.com',
@@ -88,6 +105,13 @@ class FlaskClientTestCase(unittest.TestCase):
         self.assertFalse(re.search(b'Hello,\s+mike!', response.data))
         self.assertFalse(
             b'You have not confirmed your account yet' in response.data)
+
+        # sign in with wrong information
+        response = self.client.post(url_for('auth.sign_in'), data={
+            'email': 'mike@example.com',
+            'password': 'cat'
+        })
+        self.assertTrue(b'Invalid username or password.' in response.data)
 
         # sign in
         response = self.client.post(url_for('auth.sign_in'), data={

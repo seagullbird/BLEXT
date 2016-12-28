@@ -11,6 +11,7 @@ from app import create_app, db
 # 这一步的作用是确保能在测试中使用current_app，像普通请求一样。
 # 然后创建一个全新的数据库，以备不时之需。
 # 数据库和程序上下文在tearDown()方法中删除
+# 其余测试脚本原理相同
 
 
 class BasicsTestCase(unittest.TestCase):

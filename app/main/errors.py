@@ -21,10 +21,3 @@ def internal_server_error(e):
         response.status_code = 500
         return response
     return render_template('errors/500.html'), 500
-
-
-@main.app_errorhandler(403)
-def forbidden(message):
-    response = jsonify({'error': 'forbidden', 'message': message})
-    response.status_code = 403
-    return response

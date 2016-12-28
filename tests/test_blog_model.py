@@ -19,6 +19,7 @@ class BlogModelTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
+    # 测试 on_change_body 方法
     def test_on_changed_body(self):
         blog = Blog(title='origin', summary_text='origin',
                     summary='origin', html='<origin></origin>')
@@ -39,6 +40,7 @@ class BlogModelTestCase(unittest.TestCase):
         self.assertTrue(origin_tags != blog.tags)
         self.assertTrue(origin_category_id != blog.category_id)
 
+    # 测试文章解析错误
     def test_body_parsing_error(self):
         try:
             blog = Blog(body='wrong format')
