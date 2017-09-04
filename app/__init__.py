@@ -5,6 +5,7 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 from flask_login import LoginManager
+from flask_admin import Admin
 
 
 # 声明各扩展对象
@@ -12,6 +13,7 @@ bootstrap = Bootstrap()
 mail = Mail()
 db = SQLAlchemy()
 login_manager = LoginManager()
+admin = Admin(name='BLEXT Backstage')
 
 # 设置安全等级为 strong ,
 # Flask-Login会记录客户端IP地址和浏览器的用户代理信息，如果发现异动就登出用户
@@ -31,6 +33,15 @@ def create_app(config_name):
     mail.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+
+    # 添加 Model View
+    from .models import User, Blog, Category, Tag
+    from .ModelView import BLEXTAdminIndexView, UserModelView, BlogModelView, CateModelView, TagModelView
+    admin.init_app(app, index_view=BLEXTAdminIndexView())
+    admin.add_view(UserModelView(User, db.session, endpoint='user-admin'))
+    admin.add_view(BlogModelView(Blog, db.session, endpoint='blog-admin'))
+    admin.add_view(CateModelView(Category, db.session, endpoint='cate-admin'))
+    admin.add_view(TagModelView(Tag, db.session, endpoint='tag-admin'))
 
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify
