@@ -13,7 +13,6 @@ bootstrap = Bootstrap()
 mail = Mail()
 db = SQLAlchemy()
 login_manager = LoginManager()
-admin = Admin(name='BLEXT Backstage')
 
 # 设置安全等级为 strong ,
 # Flask-Login会记录客户端IP地址和浏览器的用户代理信息，如果发现异动就登出用户
@@ -37,7 +36,7 @@ def create_app(config_name):
     # 添加 Model View
     from .models import User, Blog, Category, Tag
     from .ModelView import BLEXTAdminIndexView, UserModelView, BlogModelView, CateModelView, TagModelView
-    admin.init_app(app, index_view=BLEXTAdminIndexView())
+    admin = Admin(app=app, name='BLEXT Backstage', index_view=BLEXTAdminIndexView())
     admin.add_view(UserModelView(User, db.session, endpoint='user-admin'))
     admin.add_view(BlogModelView(Blog, db.session, endpoint='blog-admin'))
     admin.add_view(CateModelView(Category, db.session, endpoint='cate-admin'))
