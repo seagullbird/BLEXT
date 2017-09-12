@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from . import auth
 from flask import render_template, flash, url_for, redirect, request
 from .forms import SigninForm, SignupForm, PasswordResetForm, PasswordResetRequestForm
@@ -129,7 +130,7 @@ def password_reset_request():
         flash('An email with instructions to reset your password has been '
               'sent to you.')
         return redirect(url_for('auth.sign_in'))
-    return render_template('auth/reset_password.html', form=form)
+    return render_template('auth/reset_password.html', form=form, msg='Enter your email you registered when signed up, an confirmation email will be sent to you right away.')
 
 
 # 重设密码页面
@@ -147,4 +148,4 @@ def password_reset(token):
             return redirect(url_for('auth.sign_in'))
         else:
             return redirect(url_for('main.index'))
-    return render_template('auth/reset_password.html', form=form)
+    return render_template('auth/reset_password.html', form=form, msg='Please reset your password.')

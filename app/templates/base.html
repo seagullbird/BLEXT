@@ -1,64 +1,107 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}BLEXT{% endblock %}
+{% block title %}{% endblock %}
 
 {% block head %}
 {{ super() }}
-<!-- <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">-->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-{% endblock %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/helios/main.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-style-bar.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-default.css') }}" />
+<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/helios/ie/ie8.css') }}" /><![endif]-->
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/helios/ie/html5shiv.js') }}"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
+{% endblock %} 
 
-{% block navbar %}
-<div class="container col-md-12">
-    <div class="row clearfix">
-        <div class="column">
-            <nav class="navbar navbar-default" role="navigation">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">BLEXT</a>
-                </div>
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                             <a href="#">Document</a>
-                        </li>
-                        {% if not current_user.is_authenticated %}
-                        <li>
-                             <a href="{{ url_for('auth.sign_in')}}">Sign in</a>
-                        </li>
-                        <li>
-                             <a href="{{ url_for('auth.sign_up')}}">Sign up</a>
-                        </li>
-                        {% else %}
-                        <li>
-                             <a href="{{ url_for('user.index',username=current_user.username) }}">
-                                {% if current_user.blog_title %}
-                                {{current_user.blog_title}}
-                                {% else %}
-                                {{current_user.username}}'s BLOG
-                                {% endif %}
-                             </a>
-                        </li>
-                        <li>
-                             <a href="{{ url_for('auth.sign_out') }}">Sign Out</a>
-                        </li>
-                        {% endif %}
+{% block content %}
+{{ super() }}
+<div id="page-wrapper">
+    <!-- Header -->
+    <div id="header">
+        {% block inside_header %}{% endblock %}
+        <!-- Nav -->
+        <nav id="nav">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="http://blext.readthedocs.io/en/latest/">Docs</a></li>
+                {% if not current_user.is_authenticated %}
+                <li>
+                      <a href="{{ url_for('auth.sign_in')}}">Sign in</a>
+                </li>
+                 {% else %}
+                 <li>
+                      <a href="{{ url_for('user.index',username=current_user.username) }}">
+                         {% if current_user.blog_title %}
+                         {{ current_user.blog_title }}
+                         {% else %}
+                         {{current_user.username}}'s BLOG
+                         {% endif %}
+                      </a>
+                 </li>
+                <li>
+                     <a href="{{ url_for('auth.sign_out') }}">Sign Out</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% block page_content %}{% endblock %}
+
+<!-- Footer -->
+<div id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="12u">
+                <!-- Contact -->
+                <section class="contact">
+                    <header>
+                        <h3>Need any help?</h3>
+                    </header>
+                    <p>Please send an email to <a href="mailto:seagullbird823@gmail.com">seagullbird823@gmail.com</a> or follow me on links below.</p>
+                    <ul class="icons">
+                        <li><a href="https://www.facebook.com/profile.php?id=100009787050378" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+                        <li><a href="https://www.instagram.com/seagullbird23/" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+                        <li><a href="https://github.com/seagullbird" class="icon fa-github"><span class="label">github</span></a></li>
+                    </ul>
+                </section>
+                <!-- Copyright -->
+                <div class="copyright">
+                    <ul class="menu">
+                        <li>&copy; seagullbird. All rights reserved.</li>
                     </ul>
                 </div>
-            </nav>
+            </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
-{% block content %}
-<div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-    {% endfor %}
-  {% block page_content %}{% endblock %}
-{% endblock %} 
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script src="{{ url_for('static', filename='js/util.js') }}"></script>
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/helios/ie/respond.min.js') }}"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/helios/main.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.dropotron/1.4.3/jquery.dropotron.min.js"></script>
+<script src="{{ url_for('static', filename='js/helios/jquery.scrolly.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/helios/jquery.onvisible.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/notificationFx.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/classie/1.0.1/classie.min.js"></script>
+{% for message in get_flashed_messages() %}
+<script>
+  // create the notification
+  var notification = new NotificationFx({
+    message : '<i class="fa fa-cog fa-2x"></i><p>{{message}}</p>',
+    layout : 'bar',
+    effect : 'slidetop',
+    ttl : 6000,
+    type : 'notice', // notice, warning or error
+  });
+
+  // show the notification
+  notification.show();
+</script>
+{% endfor %}
+{% endblock %}

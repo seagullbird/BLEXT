@@ -1,0 +1,36 @@
+{% extends "user/base.html" %}
+{% import "user/_macros.html" as macros %}
+{% block page_content %}
+    <div id="main">
+        <div class="inner">
+        <section>
+            <ul class="comments">
+                {% if users %}
+                {% for user in users %}
+                <li class="comment">
+                    <div class="comment-content">
+                        <section id="banner">
+                            <div class="content">
+                                <header>
+                                    <h2><a href="{{ url_for('user.user',host_username=host_user.username,username=user.username) }}">{{ user.username }}</a></h2>
+                                </header>
+                            </div>
+                        </section>
+                    </div>
+                </li>
+                {% endfor %}
+                {% else %}
+                    <header id="header"></header>
+                    <section>
+                        <header class="main">
+                            <h1>User NOT Found.</h1>
+                        </header>
+                    </section>
+                {% endif %}
+            </ul>
+        </section>
+        </div>
+    </div>
+
+
+{% endblock %}

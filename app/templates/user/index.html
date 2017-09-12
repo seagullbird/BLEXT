@@ -1,97 +1,62 @@
 {% extends "user/base.html" %}
 {% import "user/_macros.html" as macros %}
+{% block title %}{{ host_user.username }}'s blog{% endblock %}
 {% block page_content %}
-<div class="container" style="margin-top: 20px;">
-	<div class="row clearfix">
-		<div class="col-md-3 column">
-			<div class="row clearfix">
-				<div class="col-md-12 column Pannel1">
-					<div class="page-header Header">
-						<h1>
-							{% if host_user.blog_title %}
-							{{host_user.blog_title}}
-							{% else %}
-							{{host_user.username}}'s BLOG
-							{% endif %}
-						</h1>
-					</div>
-					<div class="panel panel-default Options">
-						{% if host_user == current_user %}
-						<a href="{{ url_for('editor.index') }}">
-							<div class="panel-heading">
-							<h3 class="panel-title">
-								Add a new Blog
-							</h3>
-						</div>
-						</a>
-						<a href="{{ url_for('settings.profile_setting') }}">
-							<div class="panel-body">
-							Settings
-						</div>
-						</a>
-						{% endif %}
-						<a href="{{ url_for('user.about_me', username=host_user.username) }}">
-							<div class="panel-body">
-							About
-						</div>
-						</a>
-						<a href="{{ url_for('main.index') }}">
-							<div class="panel-footer">
-							Back to BLEXT
-						</div>
-						</a>
-					</div>
-				</div>
-			</div>
-			<div class="row clearfix">
-				<div class="col-md-12 column Pannel2">
-					<div class="col-md-12">
-						<div class="Avatar col-md-8 col-md-offset-2">
-							{% if host_user.avatar_url %}
-							<img width="100%" height="100%" src="{{host_user.avatar_url}}" />
-							{% else %}
-							<img width="100%" height="100%" src="../static/img/default_header.jpg" />
-							{% endif %}
-						</div>
-					</div>
-					<div class="Bio">
-						{% if host_user.bio %}
-						<p>{{ host_user.bio }}</p>
-						{% else %}
-						<a href="{{ url_for('settings.profile_setting') }}">
-							Add a Bio
-						</a>
-						{% endif %}
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-8 column Article_list">
-			{% for blog in blogs %}
-			<div class="Articles">
-				<div class="blog-header">
-					<h2>{{ blog.title }}</h2>
-					<p>Posted on {{ (blog.timestamp.date()) }}</p>
-					<br>
-				</div>
-			<blockquote>
-				<i style=" color: grey; font-size:10px">
-					{{ blog.summary|safe }}
-				</i>
-			</blockquote>
-	
-			<p style="text-align: center;">
-				<a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}"><button class="btn btn-default" style="border: 2px solid black">Read More >></button></a>
-			</p>
-			<br>
-			</div>
-			{% endfor %}
-			{% if blogs and pagination %}
-				<div class="pagination" style="float: right">
-			    {{ macros.pagination_widget(pagination, '.index', host_user) }}
-				</div>
-			{% endif %}
-		</div>
-	</div>
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <!-- Header -->
+        <div class="post-tabs">
+            <ul class="nav nav-tabs">
+                <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_all',username=host_user.username) }}">All</a></li>
+                {% if current_user.is_authenticated %}
+                <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed',username=host_user.username) }}">Followers</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        {% if blogs %}
+        	{% for blog in blogs %}
+	        <header id="header">
+	        	{% if current_user.is_authenticated and current_user.username == blog.author.username %}
+	            <ul class="icons">
+	                <li><a href="{{ url_for('editor.edit', blog_id=blog.id) }}" class="icon fa-pencil-square"><span class="label">Edit</span></a></li>
+	                <li><a href="{{ url_for('user.delete_blog', blog_id=blog.id) }}" class="icon fa-trash"><span class="label">Delete</span></a></li>
+	            </ul>
+            	{% endif %}
+	        </header>
+	        <!-- Banner -->
+	        <section id="banner">
+	            <div class="content">
+	                <header>
+	                    <h2>{{ blog.title }}</h2>
+	                    <p>
+							In <a href="{{ url_for('user.category', username=host_user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
+	                    </p>
+	                </header>
+	                <p>
+						{{ blog.summary | safe }}
+	                </p>
+	                <ul class="actions">
+	                    <li><a href="{{ url_for('user.blog_page', username=host_user.username, blog_id=blog.id) }}" class="button big">Read More</a></li>
+	                </ul>
+	            </div>
+	        </section>
+        	{% endfor %}
+        	{% if blogs and pagination %}
+        	<!-- Pagination -->
+        	<ul class="pagination">
+	        	{{ macros.pagination_widget(pagination, '.index', host_user) }}
+	        </ul>
+        	{% endif %}
+        {% else %}
+        <header id="header"></header>
+        <section>
+        	<header class="main">
+        		<h1>There's nothing here.</h1>
+        	</header>
+        </section>
+        {% endif %}
+    </div>
 </div>
+
 {% endblock %}

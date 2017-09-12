@@ -1,0 +1,68 @@
+{% extends "user/base.html" %}
+{% import "user/_macros.html" as macros %}
+{% block title %}{{ username or user.username }}'s blog{% endblock %}
+{% block page_content %}
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <!-- Header -->
+        <p>
+        <div class="post-tabs">
+            <ul class="nav nav-tabs">
+                <li>
+                    {% if not current_user.is_following(user) %}
+                        <a href="{{ url_for('user.follow', host_username=host_user.usernmae, username=user.username) }}" class="btn btn-primary">Follow</a>
+                        {% else %}
+                        <a href="{{ url_for('user.unfollow', host_username=host_user.username, username=user.username) }}" class="btn btn-default">Unfollow</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+        </p>
+        {% if blogs %}
+        	{% for blog in blogs %}
+	        <header id="header">
+	        	{% if current_user.is_authenticated and current_user.username == blog.author.username %}
+	            <ul class="icons">
+	                <li><a href="{{ url_for('editor.edit', blog_id=blog.id) }}" class="icon fa-pencil-square"><span class="label">Edit</span></a></li>
+	                <li><a href="{{ url_for('user.delete_blog', blog_id=blog.id) }}" class="icon fa-trash"><span class="label">Delete</span></a></li>
+	            </ul>
+            	{% endif %}
+	        </header>
+	        <!-- Banner -->
+	        <section id="banner">
+	            <div class="content">
+	                <header>
+	                    <h2>{{ blog.title }}</h2>
+	                    <p>
+							In <a href="{{ url_for('user.category', username=user.username, category_name=blog.category.name) }}">{{ blog.category.name }}</a>
+	                    </p>
+	                </header>
+	                <p>
+						{{ blog.summary | safe }}
+	                </p>
+	                <ul class="actions">
+	                    <li><a href="{{ url_for('user.blog_page', username=user.username, blog_id=blog.id) }}" class="button big">Read More</a></li>
+	                </ul>
+	            </div>
+	        </section>
+        	{% endfor %}
+        	{% if blogs and pagination %}
+        	<!-- Pagination -->
+        	<ul class="pagination">
+	        	{{ macros.pagination_widget(pagination, '.index', user) }}
+	        </ul>
+        	{% endif %}
+        {% else %}
+        <header id="header"></header>
+        <section>
+        	<header class="main">
+        		<h1>There's nothing here.</h1>
+        	</header>
+        </section>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

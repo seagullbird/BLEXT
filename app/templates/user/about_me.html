@@ -1,15 +1,18 @@
 {% extends "user/base.html" %}
 
+{% block title %}About Me{% endblock %}
+
 {% block page_content %}
-<div class="container">
-	<div class="col-md-8 col-md-offset-2 blog-content">
-		<div class="blog-header">
-			<h1>About Me</h1>
-			<br>
-		</div>
-		<div class="blog-body" id="blog-body">
-			{{about_me|safe}}
-		</div>
-	</div>
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <header id="header"></header>
+        <section>
+            <header class="main">
+                <h1>About Me</h1>
+            </header>
+            {{about_me|safe}}
+        </section>
+    </div>
 </div>
 {% endblock %}

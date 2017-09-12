@@ -1,33 +1,34 @@
 {% extends "base.html" %}
 
+{% block title %}BLEXT - Sign up{% endblock %}
+
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">Sign up</h1>
+    </header>
+</div>
+
+{% endblock %}
+
 {% block page_content %}
-	<div class="container area col-md-10 col-md-offset-1">
-	<div class="row clearfix content">
-		<div class="col-md-4 column col-md-offset-4">
-			{{ wtf.quick_form(form) }}
-			<!-- <form class="form-horizontal" role="form">
-				<div class="form-group">
-					<div class="col-sm-12">
-						<input type="email" class="form-control" id="inputEmail3" placeholder="Email" />
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-12">
-						<input type="password" class="form-control" id="inputPassword3" placeholder="Password" />
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-12">
-						<input type="password" class="form-control" id="inputPassword3" placeholder="Confirm Password" />
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-12">
-						 <button type="submit" class="btn btn-info">Sign up</button>
-					</div>
-				</div>
-			</form> -->
-		</div>
-	</div>
-	</div>
+<!-- Main -->
+<div class="wrapper style1">
+    <div class="container">
+        <article id="main" class="special">
+            <section>
+				{{ wtf.quick_form(form) }}
+            </section>
+        </article>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$('body').addClass('no-sidebar');
+</script>
 {% endblock %}

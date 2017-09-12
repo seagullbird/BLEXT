@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import Required, EqualTo, Length
@@ -24,4 +25,5 @@ class ProfileSettingForm(FlaskForm):
     blog_title = StringField('Blog Title', validators=[Length(0, 32)])
     # 用户 about me 字段
     about_me = TextAreaField('About me (In markdown)')
+
     submit = SubmitField('Update Profile')

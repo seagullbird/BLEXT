@@ -1,62 +1,44 @@
 {% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}BLEXT{% endblock %}
+{% block title %}BLEXT - Editor{% endblock %}
 
 {% block head %}
 {{ super() }}
-<!-- <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">-->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/editor.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-markdown/css/bootstrap-markdown.min.css') }}">
-
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/simplemde.min.css') }}">
+<script src="https://use.fontawesome.com/ab291d07ba.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-style-bar.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-default.css') }}" />
+<script src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
 {% endblock %}
 
-{% block navbar %}
-<nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
-	<div class="navbar-header">
-		 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="#">BLEXT EDITOR</a>
-	</div>
-	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		<ul class="nav navbar-nav">
-			<li>
-				 <a href="{{ url_for('user.index', username=current_user.username) }}">Home</a>
-			</li>
-			<li>
-				 <a href="#">Help</a>
-			</li>
-		</ul>
-
-		
-
-		<ul class="nav navbar-nav navbar-right">
-			<li>
-				<button class="btn btn-info" style="margin-top: 8px; margin-right: 8px;">Save</button>
-			</li>
-			<li>
-				<button id="publish" type="submit" class="btn btn-danger" style="margin-top: 8px; margin-right: 30px;">Publish</button>
-			</li>
-		</ul>
-	</div>
-</nav>
-
-{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
-    </div>
-
-    {% endfor %}
-  {% block page_content %}{% endblock %}
-</div>
+	{% block page_content %}{% endblock %}
 {% endblock %} 
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='bootstrap-markdown/js/bootstrap-markdown.js') }}"></script>
-<script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simplemde/1.11.2/simplemde.min.js"></script>
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+<script src="{{ url_for('static', filename='js/notificationFx.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/classie/1.0.1/classie.min.js"></script>
+<script>
+	$('.fa-home').attr('href', '{{ home_url }}');
+</script>
+{% for message in get_flashed_messages() %}
+<script>
+  // create the notification
+  var notification = new NotificationFx({
+    message : '<i class="fa fa-cog fa-2x"></i><p>{{message}}</p>',
+    layout : 'bar',
+    effect : 'slidetop',
+    ttl : 6000,
+    type : 'notice', // notice, warning or error
+  });
+  // show the notification
+  notification.show();
+</script>
+{% endfor %}
 {% endblock %}

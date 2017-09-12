@@ -1,31 +1,44 @@
 {% extends "user/base.html" %}
+{% import "user/_macros.html" as macros %}
+{% block title %}{{ blog.title }}'s blog{% endblock %}
 
 {% block page_content %}
-<div class="container">
-	<div class="col-md-8 col-md-offset-2 blog-content">
-		<div class="blog-header">
-			<h1>{{ blog.title }}</h1>
-			<p>Posted on {{ (blog.timestamp.date()) }}</p>
-			<br>
-		</div>
-		<div class="blog-body" id="blog-body">
-			{{blog.html|safe}}
-		</div>
-	</div>
-	{% if current_user.is_authenticated and current_user.username == blog.author.username %}
-	<div class="col-md-1 col-md-offset-1 control-pannel">
-		 <div class="control-btn">
-		 <a href="#">
-		 	<button type="button" class="btn btn-info">Edit</button>
-		 </a>
-		 </div>
-		 
-		 <div class="control-btn">
-		 	<a href="{{ url_for('user.delete_blog', blog_id=blog.id) }}">
-		 		<button type="button" class="btn btn-danger">Delete</button>
-		 	</a>
-		 </div>
-	</div>
-	{% endif %}
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <!-- Header -->
+        <div id="header">
+                {% if current_user.is_authenticated and current_user.username == blog.author.username %}
+                <ul class="icons">
+                    <li><a href="{{ url_for('editor.edit', blog_id=blog.id) }}" class="icon fa-pencil-square"><span class="label">Edit</span></a></li>
+                    <li><a href="{{ url_for('user.delete_blog', blog_id=blog.id) }}" class="icon fa-trash"><span class="label">Delete</span></a></li>
+                </ul>
+                {% endif %}
+        </div>
+        <!-- Content -->
+        <section>
+            <header class="main">
+                <h1>{{ blog.title }}</h1>
+            </header>
+            {{blog.html|safe}}
+        </section>
+        <!-- Comments -->
+        {% include 'user/_comments.html' %}
+        <section>
+            <div class="comment-form">
+                {{ wtf.quick_form(form) }}
+            </div>
+            <div class="post-footer">
+                <a href="{{ url_for('.post', id=blog.id,username=blog.author.username) }}">
+                    <span class="label label-default">Permalink</span>
+                </a>
+                <a href="{{ url_for('.post', id=blog.id,username=blog.author.username) }}#comments">
+                    <span class="label label-primary">{{ blog.comments.count() }} Comments</span>
+                </a>
+            </div>
+        </section>
+
+    </div>
 </div>
+
 {% endblock %}

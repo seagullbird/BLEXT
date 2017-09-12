@@ -1,31 +1,25 @@
 {% macro pagination_widget(pagination, endpoint, host_user) %}
-<ul class="pagination">
-    <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
-        <a href="{% if pagination.has_prev %}{{ url_for(endpoint,
-            page = pagination.page - 1, username=host_user.username, **kwargs) }}{% else %}#{% endif %}">
-            &laquo;
-        </a>
-    </li>
-    {% for p in pagination.iter_pages() %}
-        {% if p %}
-            {% if p == pagination.page %}
-            <li class="active">
-                <a href="{{ url_for(endpoint, page = p, username=host_user.username, **kwargs) }}">{{ p }}</a>
-            </li>
-            {% else %}
-            <li>
-                <a href="{{ url_for(endpoint, page = p, username=host_user.username, **kwargs) }}">{{ p }}</a>
-            </li>
-            {% endif %}
+
+
+{% if pagination.has_prev %}
+<li><span class="button">Prev</span></li>
+{% endif %}
+
+{% for p in pagination.iter_pages() %}
+    {% if p %}
+        {% if p == pagination.page %}
+            <li><a href="{{ url_for(endpoint, page = p, username=host_user.username, **kwargs) }}" class="page active">{{ p }}</a></li>
         {% else %}
-        <li class="disabled"><a href="#">&hellip;</a></li>
+            <li><a href="{{ url_for(endpoint, page = p, username=host_user.username, **kwargs) }}" class="page">{{ p }}</a></li>
         {% endif %}
-    {% endfor %}
-    <li{% if not pagination.has_next %} class="disabled"{% endif %}>
-        <a href="{% if pagination.has_next %}{{ url_for(endpoint,
-            page = pagination.page + 1, username=host_user.username, **kwargs) }}{% else %}#{% endif %}">
-            &raquo;
-        </a>
-    </li>
-</ul>
+    {% else %}
+        <span>&hellip;</span>
+    {% endif %}
+{% endfor %}
+
+
+{% if pagination.has_next %}
+<li><span class="button">Next</span></li>
+{% endif %}
+
 {% endmacro %}

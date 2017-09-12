@@ -1,32 +1,88 @@
-from . import db, login_manager
-from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+# -*- coding: utf-8 -*-
+from .blog_parser import parse_markdown
+from .blog_parser import Blog_Parser
+from .exceptions import ParsingError
+
 from datetime import datetime
+import hashlib
+from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from markdown import markdown
+import bleach
+from flask import current_app, request, url_for
+from flask_login import UserMixin, AnonymousUserMixin
+#from app.exceptions import ValidationError
+from . import db, login_manager
 
 
-# （用户）角色模型
+# 用户模型
+# 继承 UserMixin ，包含要使用 Flask-login 的一些默认方法
+# Alex add Permision and Decorator
+class Permission:
+    FOLLOW = 0x01
+    COMMENT = 0x02
+    WRITE_ARTICLES = 0x04
+    MODERATE_COMMENTS = 0x08
+    ADMINISTER = 0x80
+
+
 class Role(db.Model):
-    # 表名
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
-    # 角色名
     name = db.Column(db.String(64), unique=True)
-
-    # 对于一个Role类的实例，其 users 属性将返回与角色相关联的用户组成的列表
-    # backref参数向User模型中添加一个role属性，从而定义反向关系。这一属性可替代role_id访问
-    # Role模型，此时获取的是模型对象，而不是外键的值
-    # dynamic: 不加载记录，但提供加载记录的查询
+    default = db.Column(db.Boolean, default=False, index=True)
+    permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
+
+    @staticmethod
+    def insert_roles():
+        roles = {
+            'User': (Permission.FOLLOW |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES, True),
+            'Moderator': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.MODERATE_COMMENTS, False),
+            'Administrator': (0xff, False)
+        }
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
 
     def __repr__(self):
         return '<Role %r>' % self.name
 
 
-# 用户模型
-# 继承 UserMixin ，包含要使用 Flask-login 的一些默认方法
+# Alex Follow关系添加
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow())
+
+
 class User(db.Model, UserMixin):
+    # Alex 使用两个一对多关系实现关注与被关注者多对多关系
+    followed = db.relationship('Follow',
+                               foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower', lazy='joined'),
+                               lazy='dynamic',
+                               cascade='all, delete-orphan')
+    followers = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'),
+                                lazy='dynamic',
+                                cascade='all, delete-orphan')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
     # 表名
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -34,8 +90,6 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), unique=True, index=True)
     # 用户邮箱
     email = db.Column(db.String(64), unique=True, index=True)
-    # 外键，这列的值是roles表中行的id值
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     # 用户的文章
     blogs = db.relationship('Blog', backref='author', lazy='dynamic')
     # 用户密码散列值
@@ -44,12 +98,18 @@ class User(db.Model, UserMixin):
     confirmed = db.Column(db.Boolean, default=False)
     # 用户个性签名
     bio = db.Column(db.String(64))
-    # 用户about_me
+    # 用户about_me纯文本
+    about_me_text = db.Column(db.Text)
+    # 用户about_me富文本
     about_me = db.Column(db.Text)
     # 用户头像图片地址
     avatar_url = db.Column(db.String(256))
-    # 用户博客标题
+    # 用户博客主页标题
     blog_title = db.Column(db.String(32))
+    # 用户文章的所有分类
+    categories = db.relationship('Category', backref='author', lazy='dynamic')
+    # 用户文章的所有标签
+    tags = db.relationship('Tag', backref='author', lazy='dynamic')
 
     # 将 password 属性设置为只写属性，即不能直接通过 .password 访问密码值
     @property
@@ -105,31 +165,84 @@ class User(db.Model, UserMixin):
         db.session.add(self)
         return True
 
-    # 生成修改邮件地址令牌
-    def generate_email_change_token(self, new_email, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'change_email': self.id, 'new_email': new_email})
+    # 生成 api 确认令牌
+    def generate_auth_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'],
+                       expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('ascii')
 
-    # 修改邮件地址
-    def change_email(self, token):
+    # 验证 api 确认令牌（如果验证通过则返回用户对象）
+    @staticmethod
+    def verify_auth_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
-            return False
-        if data.get('change_email') != self.id:
-            return False
-        new_email = data.get('new_email')
-        if new_email is None:
-            return False
-        if self.query.filter_by(email=new_email).first() is not None:
-            return False
-        self.email = new_email
-        db.session.add(self)
-        return True
+            return None
+        return User.query.get(data['id'])
+
+    # Alex 关注关系的辅助方法
+    def follow(self, user):    # 手动把Follow实例插入关联表，从而把关注者和被关注者联结
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_following(self, user):
+        return self.followed.filter_by(followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+
+    @property
+    def followed_blogs(self):
+        return Blog.query.join(Follow, Follow.followed_id == Blog.author_id)\
+            .filter(Follow.follower_id == self.id)
+
+    # 将用户资源转化为JSON格式的序列化字典（用于api）
+    def to_json(self):
+        return {
+            'url': url_for('api.get_user', _external=True, _scheme="https"),
+            'username': self.username,
+            'blogs': url_for('api.get_blogs', _external=True, _scheme="https"),
+            'categories': url_for('api.get_user_categories', _external=True, _scheme="https"),
+            'tags': url_for('api.get_user_tags', _external=True, _scheme="https"),
+            'avatar_url': self.avatar_url,
+            'followed_posts': url_for('api.get_user_followed_posts',
+                                      id=self.id, _external=True),
+            'blog_count': self.blogs.count()
+        }
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        hash = self.avatar_hash or hashlib.md5(
+            self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
+            url=url, hash=hash, size=size, default=default, rating=rating)
+
+    def can(self, permissions):
+        return self.role is not None and \
+            (self.role.permissions & permissions) == permissions
+
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTER)
+
+
+# 文章与标签关系表
+blog_tag = db.Table('blog_tag',
+                    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id')),
+                    db.Column('page_id', db.Integer, db.ForeignKey('blogs.id'))
+                    )
 
 
 # 博客文章模型
@@ -139,8 +252,15 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # 文章标题
     title = db.Column(db.String(128))
+    # 文章简介纯文本
+    summary_text = db.Column(db.Text)
     # 文章简介
     summary = db.Column(db.Text)
+    # 文章分类
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    # 文章标签
+    tags = db.relationship('Tag', secondary=blog_tag,
+                           backref=db.backref('blogs', lazy='dynamic'))
     # 文章正文（纯文本）
     body = db.Column(db.Text)
     # 文章正文（html）
@@ -149,6 +269,168 @@ class Blog(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     # 作者
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # 是否草稿
+    draft = db.Column(db.Boolean, default=False)
+
+    # Alex blogs表 与comments 表一对多关系
+    comments = db.relationship('Comment', backref='blogs', lazy='dynamic')
+
+
+    # 当body属性更新时，自动从body中解析出其余各项属性并更新（或新建）
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        blog_parser = Blog_Parser()
+        # 利用parse函数从value（也就是被改变的body）值中解析出各项属性并赋值
+        try:
+            title, category_name, tag_names, summary_text, content = blog_parser.parse(
+                value)
+            target.title = title
+            target.summary_text = summary_text
+            target.summary = parse_markdown(summary_text)
+            target.html = parse_markdown(content)
+            target.change_category(Category.generate_category(
+                category_name, target.author_id))
+            target.change_tags(Tag.generate_tags([t.strip() for t in tag_names.strip(
+                '[').strip(']').split(',')], target.author_id))
+
+        except ParsingError as e:
+            raise ParsingError(e)
+
+    # 更新标签处理
+    def change_tags(self, new_tags):
+        old_tags = self.tags
+        # 求差集，new_tags 中没有而 old_tags 中有的为已删除标签
+        deleted_tags = list(set(old_tags).difference(set(new_tags)))
+        # 更新新的标签
+        self.tags = new_tags
+        # 对于已删除的标签，如果其下没有任何文章则删除该标签
+        for tag in deleted_tags:
+            if not tag.blogs.all():
+                db.session.delete(tag)
+
+    # 更新分类处理
+    def change_category(self, new_category):
+        old_category = self.category
+        if old_category:
+            # 如果新分类与原分类不同才处理
+            if new_category != old_category:
+                # 更新分类
+                self.category = new_category
+                # 如果原分类下再没有任何文章则删除原分类
+                if not old_category.blogs.all():
+                    db.session.delete(old_category)
+        else:
+            self.category = new_category
+
+    # 删除标签处理（删除文章时）
+    def delete_tags(self):
+        cur_tags = self.tags[:]
+        for tag in cur_tags:
+            tag.blogs.remove(self)
+            # 如果该标签下删除这篇博文后没有其他博文了则删除该标签
+            if not tag.blogs.all():
+                db.session.delete(tag)
+
+    # 删除分类处理（删除文章时）
+    def delete_category(self):
+        cur_category = self.category
+        # 如果该分类下删除这篇博文后没有其他博文了则删除该分类
+        cur_category.blogs.remove(self)
+        if not cur_category.blogs.all():
+            db.session.delete(cur_category)
+
+    # 将博客文章资源转化为JSON格式的序列化字典（用于api）
+    def to_json(self):
+        # _external=True, _scheme="https" 指定生成完整 URL （而不是相对 URL ）
+        return {
+            'url': url_for('api.get_blog', blog_id=self.id, _external=True, _scheme="https"),
+            'id': self.id,
+            'title': self.title,
+            'summary_text': self.summary_text,
+            'body': self.body,
+            'timestamp': self.timestamp,
+            'draft': self.draft,
+            'author': url_for('api.get_user', _external=True, _scheme="https"),
+            'category': url_for('api.get_blog_category', blog_id=self.id, _external=True, _scheme="https"),
+            'tags': url_for('api.get_blog_tags', blog_id=self.id, _external=True, _scheme="https")
+        }
+
+    def __repr__(self):
+        return '<Blog %r>' % self.title
+
+
+# 将 on_change_body 函数注册到 body 字段上
+# 只要 body 字段设定了新值，on_change_body 函数就会自动调用
+db.event.listen(Blog.body, 'set', Blog.on_changed_body)
+
+
+# 文章分类模型（一篇文章对应一个分类，一个分类对应多篇文章）
+class Category(db.Model):
+    # 表名
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key=True)
+    # 分类名
+    name = db.Column(db.String(128))
+    # 对应的文章
+    blogs = db.relationship('Blog', backref='category', lazy='dynamic')
+    # 对应的用户
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    # 从分类名 category_name 和用户 id 生成新分类（如果不存在）
+    @staticmethod
+    def generate_category(category_name, author_id):
+        category = Category.query.filter_by(
+            name=category_name, author_id=author_id).first()
+        # 如果当前用户名下不存在这个分类则新建：
+        if not category:
+            category = Category(name=category_name, author_id=author_id)
+        return category
+
+    def to_json(self):
+        return {
+            'name': self.name
+        }
+
+    def __repr__(self):
+        return '<Category %r>' % self.name
+
+
+# 文章标签模型
+class Tag(db.Model):
+    # 表名
+    __tablename__ = 'tags'
+    id = db.Column(db.Integer, primary_key=True)
+    # 标签名
+    name = db.Column(db.String(128))
+    # 对应的用户
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    # 从标签名 list 和 用户 id 生成 Tag 类型列表
+    @staticmethod
+    def generate_tags(tag_names, author_id):
+        tags = []
+        # 处理文章标签
+        for tag_name in tag_names:
+            tag_name = tag_name.strip()
+            if tag_name:
+                # 在用户名下查询标签名
+                tag = Tag.query.filter_by(
+                    name=tag_name, author_id=author_id).first()
+                # 如果不存在则新建并添加
+                if not tag:
+                    tag = Tag(name=tag_name, author_id=author_id)
+                    # 添加进数据库
+                    db.session.add(tag)
+                tags.append(tag)
+        return tags
+
+    def to_json(self):
+        return {
+            'name': self.name
+        }
+
+    def __repr__(self):
+        return '<Tag %r>' % self.name
 
 
 # 加载用户的回调函数，用 user_id 查找用户并返回用户对象
@@ -156,3 +438,45 @@ class Blog(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# Alex Comment 模型, 几乎和Blog 模型一样，知识多了一个disable字段，协管员通过此字段查禁不当言论
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    blog_id = db.Column(db.Integer, db.ForeignKey('blogs.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
+                        'strong']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+
+    def to_json(self):
+        json_comment = {
+            'url': url_for('api.get_comment', id=self.id, _external=True),
+            'post': url_for('api.get_post', id=self.post_id, _external=True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author_id,
+                              _external=True),
+        }
+        return json_comment
+
+    @staticmethod
+    def from_json(json_comment):
+        body = json_comment.get('body')
+        if body is None or body == '':
+            raise ValidationError('comment does not have a body')
+        return Comment(body=body)
+
+
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+

@@ -2,8 +2,38 @@
 
 {% block title %}BLEXT - Internal Server Error{% endblock %}
 
-{% block page_content %}
-<div class="page-header">
-  <h1>Internal Server Error</h1>
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">Internal Server Error</h1>
+    </header>
 </div>
-{% endblock %} 
+
+{% endblock %}
+
+{% block page_content %}
+<!-- Main -->
+<div class="wrapper style1">
+    <div class="container">
+        <article id="main" class="special">
+            <section>
+                <h1>
+		        Sorry!
+		    	</h1>
+                <p>
+                    Something wrong at server.
+                </p>
+            </section>
+        </article>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$('body').addClass('no-sidebar');
+</script>
+{% endblock %}

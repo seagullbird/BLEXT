@@ -1,21 +1,9 @@
 {% extends "editor/base.html" %} 
 
 {% block page_content %}
-<form action id="text_form" method="post" class="form form-horizontal sign_in_form" role="form" name="text_form">
-    <textarea name="plainText" id="plainText" placeholder="Write your Markdown here..."></textarea>
+<form action id="text_form" method="post" class="form form-horizontal" role="form" name="text_form">	
+	<textarea name="plainText" id="plainText" placeholder="Write your Markdown content here">{{ text }}</textarea>
+    <input type="hidden" id="draft" name="draft"/>
+    <input type="hidden" id="blog_id" name="blog_id" value="{{ blog_id }}" />
 </form>
-
-{% endblock %} 
-
-{% block scripts %} 
-{{ super() }}
-<script type="text/javascript">
-	$('#publish').click(function() {
-	    $('#text_form').submit();
-	});
-
-	window.onload = function() {
-		$("#plainText").markdown({autofocus:true});
-	}
-</script>
 {% endblock %}

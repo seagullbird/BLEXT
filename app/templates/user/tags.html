@@ -1,0 +1,33 @@
+{% extends "user/base.html" %}
+
+{% block page_content %}
+<!-- Main -->
+<div id="main">
+    <div class="inner">
+        <!-- Header -->
+        <header id="header">
+        	<h2>Tags</h2>
+        </header>
+        <section id="banner">
+        	{% if tags %}
+	        <ul>
+			{% for tag in tags %}
+				<li>
+				<a href="{{ url_for('user.tag', username=host_user.username, tag_name=tag.name) }}">
+					{{ tag.name }}
+				</a>
+				</li>
+			{% endfor %}
+			</ul>
+			{% else %}
+			<header id="header"></header>
+			<section>
+			    <header class="main">
+			        <h1>There's nothing here.</h1>
+			    </header>
+			</section>
+			{% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

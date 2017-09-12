@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 from . import settings
 from flask import render_template, flash, redirect, url_for
 from .forms import ChangePasswordForm, ProfileSettingForm
 from flask_login import login_required, current_user, logout_user
 from .. import db
-import mistune
+from ..blog_parser import parse_markdown
 
 
 # 设置个人资料
-@login_required
 @settings.route('/admin', methods=['GET', 'POST'])
+@login_required
 def admin_setting():
     form = ChangePasswordForm()
     if form.validate_on_submit():
@@ -22,25 +23,25 @@ def admin_setting():
             return redirect(url_for('main.index'))
         else:
             flash('Invalid password.')
-    return render_template('settings/index.html', title='Change Password', form=form)
+            return redirect(url_for('settings.admin_setting'))
+    return render_template('user/settings.html', title='Personal Account', form=form, host_user=current_user)
 
 
 # 设置账户资料
-@login_required
 @settings.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile_setting():
     form = ProfileSettingForm()
     if form.validate_on_submit():
-        if form.bio.data:
-            current_user.bio = form.bio.data
-        if form.avatar_url.data:
-            current_user.avatar_url = form.avatar_url.data
-        if form.blog_title.data:
-            current_user.blog_title = form.blog_title.data
-        if form.about_me.data:
-            markdown = mistune.Markdown()
-            # 利用markdown解析器将markdown转换为html
-            current_user.about_me = markdown(form.about_me.data)
+        current_user.bio = form.bio.data
+        current_user.avatar_url = form.avatar_url.data
+        current_user.blog_title = form.blog_title.data
+        current_user.about_me_text = form.about_me.data
+        current_user.about_me = parse_markdown(form.about_me.data)
         db.session.add(current_user)
         return redirect(url_for('user.index', username=current_user.username))
-    return render_template('settings/index.html', title='Public Profile', form=form)
+    form.bio.data = current_user.bio
+    form.avatar_url.data = current_user.avatar_url
+    form.blog_title.data = current_user.blog_title
+    form.about_me.data = current_user.about_me_text
+    return render_template('user/settings.html', title='Public Profile', form=form, host_user=current_user)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Blueprint
 # 创建蓝本
 main = Blueprint('main', __name__)

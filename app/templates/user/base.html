@@ -1,24 +1,119 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}BLEXT{% endblock %}
+{% block title %}{{ host_user.blog_title or host_user.username}}{% endblock %}
 
 {% block head %}
 {{ super() }}
-<!-- <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">-->
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css') }}">
-{% endblock %}
-
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/main.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/simplemde.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/github.css') }}" />
+<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie8.css') }}" /><![endif]-->
+<!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='css/editorial/ie/ie9.css') }}" /><![endif]-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-style-growl.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ns-default.css') }}" />
+<script src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
+{% endblock %} 
 
 {% block content %}
-<div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
+{{ super() }}
+<!-- Wrapper -->
+<div id="wrapper">
+    {% block page_content %}{% endblock %}
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="inner">
+            <!-- Search -->
+			<section id="search" class="alt">
+                <form method="get" action="{{ url_for('user.searchUser',username=host_user.username) }}">
+                    <input type="text" name="query" id="query" placeholder="Search For Users" />
+                </form>
+            </section>
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>
+						{{ host_user.blog_title or host_user.username+"'s blog"}}
+                    </h2>
+                </header>
+                <ul>
+                    <li><a href="{{ url_for('user.index', username=host_user.username) }}">Home</a></li>
+                    {% if host_user == current_user %}
+                    <li><a href="{{ url_for('editor.index') }}">Add a New Blog</a></li>
+                    <li>
+                        <span class="opener">Settings</span>
+                        <ul>
+                            <li><a href="{{url_for('settings.profile_setting')}}">Profile</a></li>
+                            <li><a href="{{url_for('settings.admin_setting')}}">Account</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <span class="opener">Aichives</span>
+                        <ul>
+                            <li><a href="{{ url_for('user.categories', username=host_user.username) }}">Categories</a></li>
+                            <li><a href="{{ url_for('user.tags', username=host_user.username) }}">Tags</a></li>
+                            {% if host_user == current_user %}
+					        <li><a href="{{ url_for('user.drafts', username=host_user.username) }}">Drafts</a></li>
+					        {% endif %}
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('user.about_me', username=host_user.username) }}">About Me</a></li>
+                    <li><a href="{{ url_for('main.index') }}">Back to BLEXT</a></li>
+                </ul>
+            </nav>
+
+            <!-- Section -->
+            <section>
+                <header class="major">
+                    <h2>{{ host_user.username }}</h2>
+                </header>
+                <div class="mini-posts">
+                    <article>
+                        <strong>
+                        {% if host_user == current_user %}
+                            {% if host_user.bio %}
+                            <p>{{ host_user.bio }}</p>
+                            {% else %}
+                            <a href="{{ url_for('settings.profile_setting') }}">
+                                Add a Bio
+                            </a>
+                            {% endif %}
+                        {% else %}
+                        <p>{{ host_user.bio or 'He does not have a bio.' }}</p>
+                        {% endif %}
+                        </strong>
+                    </article>
+                </div>
+            </section>
+        </div>
     </div>
-    {% endfor %}
-	{% block page_content %}{% endblock %}
-{% endblock %} 
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simplemde/1.11.2/simplemde.min.js"></script>
+<script src="{{ url_for('static', filename='js/util.js') }}"></script>
+<!--[if lte IE 8]><script src="{{ url_for('static', filename='js/editorial/ie/respond.min.js') }}"></script><![endif]-->
+<script src="{{ url_for('static', filename='js/editorial/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/notificationFx.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/classie/1.0.1/classie.min.js"></script>
+{% for message in get_flashed_messages() %}
+<script>
+// create the notification
+var notification = new NotificationFx({
+    message : '<p>{{message}}</p>',
+    layout : 'growl',
+    ttl: 6000,
+    effect : 'scale',
+    type : 'notice', // notice, warning, error or success
+});
+
+// show the notification
+notification.show();
+</script>
+{% endfor %}
+{% endblock %}

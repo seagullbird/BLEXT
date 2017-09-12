@@ -1,22 +1,44 @@
 {% extends "base.html" %}
+{% block title %}BLEXT - Unconfirmed{% endblock %}
+
+
+{% block inside_header %}
+<!-- Inner -->
+<div class="inner">
+    <header>
+        <h1 id="logo">Unconfirmed</h1>
+    </header>
+</div>
+
+{% endblock %}
 
 {% block page_content %}
-	<div class="container area col-md-10 col-md-offset-1">
-	<div class="row clearfix content">
-		<div class="col-md-4 column col-md-offset-4">
-			<h1>
+<!-- Main -->
+<div class="wrapper style1">
+    <div class="container">
+        <article id="main" class="special">
+            <section>
+                <h1>
 		        Hello, {{ current_user.username }}!
 		    </h1>
-		    <h3>You have not confirmed your account yet.</h3>
-		    <p>
-		        Before you can access this site you need to confirm your account.
-		        Check your inbox, you should have received an email with a confirmation link.
-		    </p>
-		    <p>
-		        Need another confirmation email?
-		        <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
-		    </p>
-		</div>
-	</div>
-	</div>
+                <h3>You have not confirmed your account yet.</h3>
+                <p>
+                    Before you can access this site you need to confirm your account. Check your inbox, you should have received an email with a confirmation link.
+                </p>
+                <p>
+                    Need another confirmation email?
+                    <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+                </p>
+            </section>
+        </article>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+	$('body').addClass('no-sidebar');
+</script>
 {% endblock %}

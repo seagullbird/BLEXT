@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import Required, Length, Email, EqualTo, Regexp
@@ -13,7 +14,7 @@ class SigninForm(FlaskForm):
     # 密码字段
     password = PasswordField('Password', validators=[Required()])
     # 记住我字段
-    remember_me = BooleanField('Keep me logged in')
+    remember_me = BooleanField('Remember me')
     # 提交按钮
     submit = SubmitField('Log In', render_kw={"class_": "btn btn-info"})
 
